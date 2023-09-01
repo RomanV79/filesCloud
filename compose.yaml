@@ -1,0 +1,14 @@
+services:
+  mysql:
+    image: 'mysql:latest'
+    environment:
+      - 'MYSQL_DATABASE=fileclouds'
+      - 'MYSQL_PASSWORD=password'
+      - 'MYSQL_ROOT_PASSWORD=verysecret'
+      - 'MYSQL_USER=admin'
+    ports:
+      - '3306'
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379'

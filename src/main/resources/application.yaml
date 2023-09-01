@@ -1,1 +1,10 @@
-
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/filescloud
+    username: admin
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver

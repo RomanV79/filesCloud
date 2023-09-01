@@ -2,13 +2,13 @@ services:
   mysql:
     image: 'mysql:8.1'
     environment:
-      - 'MYSQL_DATABASE=fileclouds'
+      - 'MYSQL_DATABASE=filescloud'
       - 'MYSQL_PASSWORD=password'
       - 'MYSQL_ROOT_PASSWORD=verysecret'
       - 'MYSQL_USER=admin'
     ports:
-      - '3306'
+      - '3306:3306'
   redis:
     image: 'redis:7.2'
     ports:
-      - '6379'
+      - '6379:6379'

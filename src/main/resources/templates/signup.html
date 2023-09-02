@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<head>
+    <meta charset="UTF-8">
+    <title>Create account in FilesCloud</title>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="form-signin col-4 mt-5">
+            <form th:method="post" th:action="@{/sign-up}" th:object="${userDto}">
+                <div class="text-center">
+                    <img class="mb-4" th:src="@{/img/files-cloud-small.png}" alt="" width="72">
+                </div>
+                <h1 class="h3 mb-3 fw-normal text-center">Please sign in</h1>
+
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="login" placeholder="Michel" th:field="*{login}">
+                    <label for="login">Login</label>
+                </div>
+<!--                <div class="alert alert-danger small p-1" role="alert" th:if="${errorMessage}">-->
+<!--                    <span th:text="${errorMessage}"/>-->
+<!--                </div>-->
+                <div class="form-floating">
+                    <input type="password" class="form-control" id="password" placeholder="Password" minlength="6"
+                           th:field="*{password}">
+                    <label for="password">Password</label>
+                </div>
+                <br>
+                <button class="btn btn-primary w-100 py-2" type="submit">Sign up</button>
+                <small class="text-body-secondary">By clicking Sign up, you agree to the terms of use.</small>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

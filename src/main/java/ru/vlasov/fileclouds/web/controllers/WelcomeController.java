@@ -1,10 +1,10 @@
 package ru.vlasov.fileclouds.web.controllers;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@Controller
 public class WelcomeController {
 
     @GetMapping("/greeting")
@@ -15,8 +15,13 @@ public class WelcomeController {
         return "Spring Security In-memory Authentication Example - Welcome " + userName;
     }
 
-    @GetMapping("")
+    @GetMapping("/")
     public String welcome(){
         return "welcome";
+    }
+
+    @GetMapping("/login")
+    public String login(){
+        return "login";
     }
 }

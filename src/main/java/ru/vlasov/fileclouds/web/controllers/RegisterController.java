@@ -8,7 +8,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import ru.vlasov.fileclouds.customException.UserExistException;
 import ru.vlasov.fileclouds.service.AppUserServiceImpl;
 import ru.vlasov.fileclouds.web.dto.UserDto;
@@ -25,9 +24,7 @@ public class RegisterController {
 
     @GetMapping("/register")
     public String registerForm(Model model) {
-        log.info("Register GET -> start");
         model.addAttribute("user", new UserDto());
-        log.info("Register GET -> end");
         return "register";
     }
 

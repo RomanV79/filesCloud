@@ -8,13 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
 @Entity
 @Table(name = "users")
-public class User {
+public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
@@ -31,4 +33,14 @@ public class User {
     @Size(min = 6, max = 128)
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"))
+    private Set<Role> roles;
+
+    public AppUser(String login, String password) {
+        this.login = login;
+        this.password = password;
+    }
 }

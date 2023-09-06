@@ -9,19 +9,13 @@
           crossorigin="anonymous">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" th:href="@{/index}">Spring Security Custom Login Example</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-    </div>
-</nav>
-<br/><br/>
 <div class="container">
+    <header th:replace="~{fragments/header :: header}"></header>
     <div class="row">
         <div class="col-md-6 offset-md-3">
+            <div class="text-center">
+                <img class="mb-4" th:src="@{/img/files-cloud-small.png}" alt="" width="72">
+            </div>
 
             <div th:if="${param.error}">
                 <div class="alert alert-danger">Invalid Email or Password</div>
@@ -32,13 +26,13 @@
 
             <div class="card">
                 <div class="card-header">
-                    <h2 class="text-center">Login Form</h2>
+                    <h2 class="text-center">Login</h2>
                 </div>
                 <div class="card-body">
                     <form method="post" role="form" th:action="@{/login}" class="form-horizontal">
                         <div class="form-group mb-3">
-                            <label class="control-label"> Email</label>
-                            <input type="text" id="username" name="username" class="form-control" placeholder="Enter email address"/>
+                            <label class="control-label"> Login</label>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="Your login"/>
                         </div>
 
                         <div class="form-group mb-3">

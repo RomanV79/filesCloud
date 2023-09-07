@@ -31,7 +31,7 @@ public class WebSecurityConfig {
                     authorize.requestMatchers("/register/**").permitAll()
                             .requestMatchers("/home").permitAll()
                             .requestMatchers("/login").permitAll()
-                            .anyRequest().anonymous();
+                            .anyRequest().authenticated();
                 })
                 .formLogin(form -> form
                         .loginPage("/login")

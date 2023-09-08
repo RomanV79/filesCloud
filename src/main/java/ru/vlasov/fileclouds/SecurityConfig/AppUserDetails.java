@@ -21,12 +21,12 @@ public class AppUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return appUser.getPassword();
+        return this.appUser.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return appUser.getLogin();
+        return this.appUser.getLogin();
     }
 
     @Override
@@ -50,6 +50,6 @@ public class AppUserDetails implements UserDetails {
     }
 
     public AppUser getAppUser() {
-        return appUser;
+        return this.appUser;
     }
 }

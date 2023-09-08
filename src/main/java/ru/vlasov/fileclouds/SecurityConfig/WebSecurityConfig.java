@@ -19,6 +19,7 @@ public class WebSecurityConfig {
 
     private final AppUserDetailsService userDetailsService;
 
+    @Autowired
     public WebSecurityConfig(AppUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }

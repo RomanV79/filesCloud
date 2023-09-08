@@ -14,9 +14,13 @@
 <!--<header th:replace="~{fragments/header :: header (isLoggedIn=${isLoggedIn}, user=${user})}"></header>-->
 
 <div class="container">
-    <header th:replace="~{fragments/header :: header}"></header>
+    <header th:replace="~{fragments/header :: header (isAuthenticated=${isAuthenticated})}"></header>
     <main>
         <div>
+            <div>
+                <h4>User name right now -> <span sec:authentication="name"></span></h4>
+                <br><br>
+            </div>
             <div class="row justify-content-start mb-2 md-2">
                 <div class="col-2">
                     <a href="#" class="btn btn-outline-primary me-2">Add folder</a>
@@ -25,12 +29,11 @@
 
             <div class="row justify-content-start mb-2 md-2">
                 <div class="col-2">
-                    <a href="#" class="btn btn-primary">Download file</a>
+                    <a href="#" class="btn btn-primary">Upload</a>
                 </div>
             </div>
         </div>
-</div>
-</main>
+    </main>
 </div>
 </body>
 </html>

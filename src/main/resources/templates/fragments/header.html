@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
@@ -8,8 +9,8 @@
 </head>
 <body>
 <div class="container">
-    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-        <!--            th:fragment="header (isLoggedIn, user)">-->
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom"
+                    th:fragment="header (isAuthenticated)">
         <div class="col-md-3 mb-2 mb-md-0">
             <a href="/home" class="d-inline-flex link-body-emphasis text-decoration-none">
                 <img width="80" th:src="@{~/img/files-cloud-small.png}" alt="FilesCloud">
@@ -28,11 +29,14 @@
         <!--        <a href="/logout" class="btn btn-primary">Logout</a>-->
         <!--    </div>-->
 
-        <div class="col-md-3 text-end">
+        <div class="col-md-3 text-end" th:unless="${isAuthenticated}">
             <a href="/login" class="btn btn-outline-primary me-2">Login</a>
             <a href="/register" class="btn btn-primary">Sign-up</a>
         </div>
-
+        <div class="col-md-3 text-end" th:if="${isAuthenticated}">
+            <a class="btn btn-outline me-2">Hi, <span sec:authentication="name"/></a>
+            <a href="/logout" class="btn btn-primary">Logout</a>
+        </div>
 
     </header>
 

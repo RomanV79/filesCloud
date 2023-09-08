@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="container">
-    <header th:replace="~{fragments/header :: header}"></header>
+    <header th:replace="~{fragments/header :: header (isAuthenticated=${isAuthenticated})}"></header>
     <div class="row">
         <div class="col-md-6 offset-md-3">
             <div class="text-center">

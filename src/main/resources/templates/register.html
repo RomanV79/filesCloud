@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="container">
-    <header th:replace="~{fragments/header :: header}"></header>
+    <header th:replace="~{fragments/header :: header (isAuthenticated=${isAuthenticated})}"></header>
     <div class="row col-md-8 offset-md-2">
         <div class="card">
             <div class="text-center">

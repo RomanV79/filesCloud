@@ -29,6 +29,7 @@ public class WebSecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/register/**").permitAll()
+                            .requestMatchers("css/**", "/img/**").permitAll()
                             .requestMatchers("/home").permitAll()
                             .requestMatchers("/login").permitAll()
                             .anyRequest().authenticated();

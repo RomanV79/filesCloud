@@ -50,6 +50,7 @@ public class RegisterController {
             model.addAttribute("errorLogin", e.getMessage());
             return "register";
         }
-        return "redirect:/register?success";
+//        return "redirect:/register?success";
+        return "redirect:/home";
     }
 }

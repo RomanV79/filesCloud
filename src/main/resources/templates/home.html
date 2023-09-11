@@ -28,9 +28,49 @@
             </div>
 
             <div class="row justify-content-start mb-2 md-2">
-                <div class="col-2">
-                    <a href="#" class="btn btn-primary">Upload</a>
+                <form action="">
+                <div class="col-4">
+                    <label for="formFile" class="form-label">Choose files for upload</label>
+                    <input class="form-control" type="file" id="formFile">
+                    <button type="submit" class="btn btn-primary">Upload</button>
                 </div>
+                </form>
+            </div>
+            <div>
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Size</th>
+                        <th scope="col">Last modified</th>
+                        <th scope="col">Delete</th>
+                        <th scope="col">Rename</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="file, status : ${storageList}">
+                        <td><a th:href="@{'?path=' +${file.name}}" th:text="${file.name}">Name</a></td>
+                        <td>Otto</td>
+                        <td>@mdo</td>
+                        <td><button type="button" class="btn btn-secondary pt-0 pb-0">delete</button></td>
+                        <td><button type="button" class="btn btn-secondary pt-0 pb-0">rename</button></td>
+                    </tr>
+<!--                    <tr>-->
+<!--                        <td>Jacob</td>-->
+<!--                        <td>Thornton</td>-->
+<!--                        <td>@fat</td>-->
+<!--                        <td></td>-->
+<!--                        <td></td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td>Larry the Bird</td>-->
+<!--                        <td>@twitter</td>-->
+<!--                        <td></td>-->
+<!--                        <td></td>-->
+<!--                        <td></td>-->
+<!--                    </tr>-->
+                    </tbody>
+                </table>
             </div>
         </div>
     </main>

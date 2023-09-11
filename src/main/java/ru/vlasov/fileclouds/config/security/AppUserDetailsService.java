@@ -1,4 +1,4 @@
-package ru.vlasov.fileclouds.SecurityConfig;
+package ru.vlasov.fileclouds.config.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -16,3 +16,10 @@ spring:
 
 #  session:
 #    timeout: 86400
+
+
+minio:
+  endpoint: http://127.0.0.1:9000
+  user_id: minio
+  password: password
+  root_bucket_name: user-files

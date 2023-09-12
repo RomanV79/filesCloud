@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
+import ru.vlasov.fileclouds.web.dto.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -79,16 +80,13 @@ public class FileStorageService {
                         .bucket(rootBucketName)
                         .prefix(directory)
                         .build());
-        log.info("results -> {}", results);
+//        log.info("results -> {}", results);
 
         List<StorageDto> storageDtoList = new ArrayList<>();
         for (Result<Item> item:results) {
-            Item item1 = item.get();
-            StorageDto object = new StorageDto();
-            object.setName(item1.objectName());
-            object.setDir(item1.isDir());
-            log.info("object -> {}", object);
-            storageDtoList.add(object);
+            StorageDto storageDto = Util.convertItemToStorageDto(item.get());
+//            log.info("object -> {}", storageDto);
+            storageDtoList.add(storageDto);
         }
 
 //        results.forEach(result ->

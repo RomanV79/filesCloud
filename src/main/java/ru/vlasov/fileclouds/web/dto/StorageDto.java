@@ -3,6 +3,9 @@ package ru.vlasov.fileclouds.web.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.PrimitiveIterator;
 
 @Getter
 @Setter
@@ -10,9 +13,9 @@ import java.time.LocalDateTime;
 @ToString
 public class StorageDto {
     private String name;
-    private String path;
-//    private TypeObject type;
+    private FilePath filePath;
+    private Breadcrumbs breadcrumbs;
     private boolean isDir;
-    private LocalDateTime localDateTime;
+    private String lastModified;
 
 }

@@ -59,10 +59,10 @@ public class HomeController {
                  InternalException e) {
             throw new RuntimeException(e);
         }
-        for (StorageDto file:storageDtoList) {
-            log.info("Name -> {}", file.getName());
-        }
-        log.info("List size -> {}", storageDtoList.size());
+//        for (StorageDto file:storageDtoList) {
+//            log.info("Name -> {}", file.getName());
+//        }
+//        log.info("List size -> {}", storageDtoList.size());
         model.addAttribute("storageList", storageDtoList);
 
         return "home";

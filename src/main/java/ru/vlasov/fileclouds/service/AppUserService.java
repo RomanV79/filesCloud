@@ -7,7 +7,7 @@ import ru.vlasov.fileclouds.web.dto.UserDto;
 import java.util.List;
 
 public interface AppUserService {
-    void save(UserDto userDto) throws UserExistException;
+    AppUser save(UserDto userDto) throws UserExistException;
 
     AppUser findAppUserByLogin(String login);
 

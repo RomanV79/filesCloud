@@ -1,5 +1,6 @@
 package ru.vlasov.fileclouds.web.controllers;
 
+import io.minio.errors.*;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -13,16 +14,24 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.vlasov.fileclouds.customException.UserExistException;
 import ru.vlasov.fileclouds.service.AppUserServiceImpl;
+import ru.vlasov.fileclouds.service.FileStorageService;
+import ru.vlasov.fileclouds.user.AppUser;
 import ru.vlasov.fileclouds.web.dto.UserDto;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 @Controller
 public class RegisterController {
 
     private final AppUserServiceImpl userService;
+    private final FileStorageService storageService;
 
-    public RegisterController(AppUserServiceImpl userService) {
+    public RegisterController(AppUserServiceImpl userService, FileStorageService storageService) {
         this.userService = userService;
+        this.storageService = storageService;
     }
 
     @GetMapping("/register")
@@ -51,10 +60,16 @@ public class RegisterController {
 //        }
 
         try {
-            userService.save(userDto);
+            AppUser appUser = userService.save(userDto);
+            String rootFolderCurrentUser = "user-" + appUser.getId() + "-files";
+            storageService.createRootUserFolder(rootFolderCurrentUser);
         } catch (UserExistException e) {
             model.addAttribute("errorLogin", e.getMessage());
             return "register";
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidResponseException | InvalidKeyException | InternalException |
+                 XmlParserException e) {
+            throw new RuntimeException(e);
         }
 //        return "redirect:/register?success";
         return "redirect:/home";

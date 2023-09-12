@@ -29,7 +29,7 @@ public class AppUserServiceImpl implements AppUserService {
 
 
     @Override
-    public void save(UserDto userDto) throws UserExistException {
+    public AppUser save(UserDto userDto) throws UserExistException {
         AppUser appUser = new AppUser();
         appUser.setLogin(userDto.getUsername());
         appUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
@@ -44,6 +44,8 @@ public class AppUserServiceImpl implements AppUserService {
         } catch (DataIntegrityViolationException e) {
             throw new UserExistException("User with this Login already exists");
         }
+
+        return appUser;
     }
 
     private Role createNewRole() {

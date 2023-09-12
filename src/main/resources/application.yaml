@@ -23,3 +23,4 @@ minio:
   user_id: minio
   password: password
   root_bucket_name: user-files
+  ghost: .file

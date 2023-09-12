@@ -1,11 +1,9 @@
 package ru.vlasov.fileclouds.web.dto;
 
-import lombok.*;
-
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.PrimitiveIterator;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter

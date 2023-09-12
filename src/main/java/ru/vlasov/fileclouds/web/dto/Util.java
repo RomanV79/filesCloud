@@ -14,10 +14,6 @@ import java.util.Map;
 public class Util {
 
     public static StorageDto convertItemToStorageDto(Item item) {
-//        log.info("item.objectName() -> {}", item.objectName());
-//        log.info("item.isDir() -> {}", item.isDir());
-//        log.info("item.lastModified() -> {}", item.lastModified());
-
 
         StorageDto storageDto = new StorageDto();
         String[] fullPaths = item.objectName().split("/");

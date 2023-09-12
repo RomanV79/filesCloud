@@ -47,17 +47,6 @@ public class RegisterController {
     public String registration(@Valid @ModelAttribute("user") UserDto userDto,
                                BindingResult result,
                                Model model) {
-//        AppUser appUserExisting = userService.findUserByEmail(userDto.getEmail());
-
-//        if(existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isEmpty()){
-//            result.rejectValue("email", null,
-//                    "There is already an account registered with the same email");
-//        }
-
-//        if(result.hasErrors()){
-//            model.addAttribute("user", userDto);
-//            return "/register";
-//        }
 
         try {
             AppUser appUser = userService.save(userDto);
@@ -71,7 +60,7 @@ public class RegisterController {
                  XmlParserException e) {
             throw new RuntimeException(e);
         }
-//        return "redirect:/register?success";
+
         return "redirect:/home";
     }
 }

@@ -30,9 +30,6 @@ public class FileStorageService {
     @Value("${minio.root_bucket_name}")
     private String rootBucketName;
 
-    @Value("${minio.ghost}")
-    private String ghostMinio;
-
     private final MinioClient minioClient;
 
     @Autowired
@@ -118,13 +115,11 @@ public class FileStorageService {
                         .bucket(rootBucketName)
                         .prefix(getRootFolder() +"/" + directory)
                         .build());
-//        log.info("results -> {}", results);
 
         List<StorageDto> storageDtoList = new ArrayList<>();
 
         for (Result<Item> item : results) {
             StorageDto storageDto = Util.convertItemToStorageDto(item.get());
-//            log.info("object -> {}", storageDto);
             if (storageDto != null) {
                 storageDtoList.add(storageDto);
             }

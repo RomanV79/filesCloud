@@ -71,7 +71,6 @@ public class FileStorageService {
         if (!path.endsWith("/") && !path.isEmpty()) {
             path = path + "/";
         }
-        path = path + ".";
 
         String objectValue = getRootFolder() + "/" + path;
         log.info("Create folder, objectValue -> {}", objectValue);

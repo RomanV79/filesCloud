@@ -1,6 +1,7 @@
 package ru.vlasov.fileclouds.web.controllers;
 
 import io.minio.errors.*;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -33,11 +34,13 @@ public class HomeController {
     }
 
     @GetMapping
-    public String home(@RequestParam(value = "path", required = false) String path, Model model) {
+    public String home(@RequestParam(value = "path", required = false) String path, Model model, HttpSession session) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = !(authentication instanceof AnonymousAuthenticationToken);
         model.addAttribute("isAuthenticated", isAuthenticated);
+        session.setAttribute("path", path);
+
 
         AppUserDetails appUserDetails = null;
         if (isAuthenticated) {

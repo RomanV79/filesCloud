@@ -15,5 +15,6 @@ public class StorageDto {
     private Breadcrumbs breadcrumbs;
     private boolean isDir;
     private String lastModified;
+    private Long size;
 
 }

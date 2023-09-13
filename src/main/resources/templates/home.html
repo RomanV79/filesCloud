@@ -37,10 +37,6 @@
                 </form>
             </div>
             <div class="d-flex">
-
-                <!--                    <div class="d-inline-block" th:unless="${storageList[0].filePath.segments == null}" th:each="segment, status : ${storageList[0].filePath.segments}">-->
-                <!--                        <a th:href="'?path=' + ${storageList[0].breadcrumbs.segments.get(segment)}" th:text="${segment}"></a><span th:unless="${status.index == storageList[0].filePath.segments.size() - 1}" class="ps-2 pe-2">-></span>-->
-                <!--                    </div>-->
                 <div class="d-inline-block">
                     <a class="bg-dark bg-gradient text-light p-1" th:href="'?path='" th:text="home"></a>
                     <span class="ps-1 pe-1" th:if="${storageList.size() > 0}">-></span>
@@ -66,8 +62,8 @@
                     <tr>
                         <th scope="col"></th>
                         <th scope="col">Name</th>
-                        <th scope="col">Size</th>
                         <th scope="col">Last modified</th>
+                        <th scope="col">Size</th>
                         <th scope="col">Delete</th>
                         <th scope="col">Rename</th>
                     </tr>
@@ -78,8 +74,9 @@
                         <td th:unless="${file.isDir}"><img th:src="@{/img/file20.png}"/></td>
                         <td><a th:href="@{'?path=' + ${#strings.defaultString(file.filePath,'')} + ${file.name}}"
                                th:text="${file.name}">Name</a></td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
+                        <td th:text="${file.lastModified}"></td>
+                        <td th:if="${file.size == 0}"></td>
+                        <td th:unless="${file.size == 0}" th:text="${#numbers.formatDecimal(file.size, 2, 'WHITESPACE', 0, 'POINT')} + ' B'"></td>
                         <td>
                             <button type="button" class="btn btn-secondary pt-0 pb-0">delete</button>
                         </td>
@@ -87,20 +84,7 @@
                             <button type="button" class="btn btn-secondary pt-0 pb-0">rename</button>
                         </td>
                     </tr>
-                    <!--                    <tr>-->
-                    <!--                        <td>Jacob</td>-->
-                    <!--                        <td>Thornton</td>-->
-                    <!--                        <td>@fat</td>-->
-                    <!--                        <td></td>-->
-                    <!--                        <td></td>-->
-                    <!--                    </tr>-->
-                    <!--                    <tr>-->
-                    <!--                        <td>Larry the Bird</td>-->
-                    <!--                        <td>@twitter</td>-->
-                    <!--                        <td></td>-->
-                    <!--                        <td></td>-->
-                    <!--                        <td></td>-->
-                    <!--                    </tr>-->
+
                     </tbody>
                 </table>
             </div>

@@ -25,8 +25,15 @@ public class Util {
 
         if (item.isDir()) {
             storageDto.setName(paths[paths.length - 1] + "/");
+            storageDto.setLastModified("");
+            storageDto.setSize(0L);
         } else {
             storageDto.setName(paths[paths.length - 1]);
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            storageDto.setLastModified(item.lastModified().format(formatter));
+
+            storageDto.setSize(item.size());
         }
 
         FilePath filePath = new FilePath();
@@ -52,13 +59,6 @@ public class Util {
         }
 
         storageDto.setDir(item.isDir());
-
-        if (item.isDir()) {
-            storageDto.setLastModified("");
-        } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            storageDto.setLastModified(item.lastModified().format(formatter));
-        }
 
         return storageDto;
     }

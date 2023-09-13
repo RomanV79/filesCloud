@@ -50,6 +50,6 @@ public class FolderController {
                  InternalException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/home";
+        return "redirect:/home?path=" + createPath;
     }
 }

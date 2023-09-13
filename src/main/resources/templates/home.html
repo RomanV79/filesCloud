@@ -66,19 +66,13 @@
             <div class="d-flex">
                 <div class="d-inline-block">
                     <a class="bg-dark bg-gradient text-light p-1" th:href="'?path='" th:text="home"></a>
-                    <span class="ps-1 pe-1" th:if="${storageList.size() > 0}">-></span>
                 </div>
-                <div th:if="${storageList.size() > 0}">
-                    <div class="d-inline-block" th:each="segment, status : ${storageList[0].filePath.segments}">
+                <div th:unless="${breadcrumbs == null}">
+                    <div class="d-inline-block" th:each="segment, status : ${breadcrumbs.listSegments}">
+                        <span class="ps-1 pe-1">-></span>
                         <a class="bg-dark bg-gradient text-light p-1"
-                           th:unless="${status.index == storageList[0].filePath.segments.size() - 1}"
-                           th:href="'?path=' + ${storageList[0].breadcrumbs.segments.get(segment)}"
+                           th:href="'?path=' + ${breadcrumbs.linkSegments.get(segment)}"
                            th:text="${segment}"></a>
-                        <a class="bg-dark bg-gradient text-light p-1"
-                           th:if="${status.index == storageList[0].filePath.segments.size() - 1}"
-                           th:text="${segment}"></a>
-                        <span class="ps-1 pe-1"
-                              th:unless="${status.index == storageList[0].filePath.segments.size() - 1}">-></span>
                     </div>
                 </div>
 

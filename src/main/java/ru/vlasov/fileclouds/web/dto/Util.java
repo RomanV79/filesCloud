@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -15,13 +16,16 @@ public class Util {
 
     public static StorageDto convertItemToStorageDto(Item item) {
 
+        log.info("Item name -> {}", item.objectName());
+        // если объект не директория но его имя заканчивается на "/" - значит это объект призрак созданный для пустой директории
+        if (!item.isDir() && item.objectName().endsWith("/")) return null;
+
         StorageDto storageDto = new StorageDto();
         String[] fullPaths = item.objectName().split("/");
-        log.info("fullPaths -> {}", Arrays.toString(fullPaths));
         String[] paths = Arrays.copyOfRange(fullPaths, 1, fullPaths.length);
-        log.info("paths -> {}", Arrays.toString(paths));
 
         if (paths.length == 0) return null;
+        log.info("paths -> {}", Arrays.toString(paths));
 
         if (item.isDir()) {
             storageDto.setName(paths[paths.length - 1] + "/");
@@ -48,18 +52,30 @@ public class Util {
                 for (int j = 0; j <= i; j++) {
                     builder.append(paths[j]).append("/");
                 }
-                breadcrumbs.getSegments().put(paths[i], builder.toString());
+                breadcrumbs.getLinkSegments().put(paths[i], builder.toString());
             }
         }
         storageDto.setFilePath(filePath);
-        storageDto.setBreadcrumbs(breadcrumbs);
-        int i = 0;
-        for (Map.Entry<String, String> pair:storageDto.getBreadcrumbs().getSegments().entrySet()) {
-            log.info("key : value ==> {} : {}", pair.getKey(), pair.getValue());
-        }
-
         storageDto.setDir(item.isDir());
 
         return storageDto;
+    }
+
+    public static Breadcrumbs getBreadcrumbs(String path) {
+        if (path.isEmpty()) {
+            return null;
+        }
+        String[] paths = path.split("/");
+        Breadcrumbs breadcrumbs = new Breadcrumbs();
+        for (int i = 0; i < paths.length; i++) {
+            breadcrumbs.getListSegments().add(paths[i]);
+            StringBuilder builder = new StringBuilder();
+            for (int j = 0; j <= i; j++) {
+                builder.append(paths[j]).append("/");
+            }
+            breadcrumbs.getLinkSegments().put(paths[i], builder.toString());
+        }
+
+        return breadcrumbs;
     }
 }

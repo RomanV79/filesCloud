@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.vlasov.fileclouds.config.security.AppUserDetails;
+import ru.vlasov.fileclouds.web.dto.Breadcrumbs;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
 import ru.vlasov.fileclouds.web.dto.Util;
 
@@ -150,5 +151,10 @@ public class FileStorageService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
         return "user-" + appUserDetails.getAppUser().getId() + "-files";
+    }
+
+    public Breadcrumbs getBreadcrumbs(String path) {
+
+        return null;
     }
 }

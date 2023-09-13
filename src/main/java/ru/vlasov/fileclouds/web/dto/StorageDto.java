@@ -12,7 +12,6 @@ import lombok.ToString;
 public class StorageDto {
     private String name;
     private FilePath filePath;
-    private Breadcrumbs breadcrumbs;
     private boolean isDir;
     private String lastModified;
     private Long size;

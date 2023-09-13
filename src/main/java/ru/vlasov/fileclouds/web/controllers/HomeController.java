@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.vlasov.fileclouds.config.security.AppUserDetails;
 import ru.vlasov.fileclouds.service.FileStorageService;
+import ru.vlasov.fileclouds.web.dto.Breadcrumbs;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
+import ru.vlasov.fileclouds.web.dto.Util;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -50,10 +52,14 @@ public class HomeController {
 
         log.info("User isAuthenticated -> {}", isAuthenticated);
 
-        if (path == null) {
-            path = "";
+        Breadcrumbs breadcrumbs;
+        if (path == null || path.isEmpty()) {
+            breadcrumbs = null;
+        } else {
+            breadcrumbs = Util.getBreadcrumbs(path);
         }
         log.info("Path -> {}", path);
+
         List<StorageDto> storageDtoList = null;
         try {
             storageDtoList = storageService.getFilesAndDirectories(path);
@@ -62,7 +68,7 @@ public class HomeController {
                  InternalException e) {
             throw new RuntimeException(e);
         }
-
+        model.addAttribute("breadcrumbs", breadcrumbs);
         model.addAttribute("storageList", storageDtoList);
 
         return "home";

@@ -102,7 +102,8 @@
                                     data-bs-toggle="modal" data-bs-target="#staticDelete">delete</button>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-secondary pt-0 pb-0" th:id="${status.index}">rename</button>
+                            <button type="button" class="btn btn-secondary pt-0 pb-0" th:id="${status.index}" th:attr="data-name=${file.name}"
+                                    data-bs-toggle="modal" data-bs-target="#staticRename">rename</button>
                         </td>
                     </tr>
 
@@ -127,6 +128,31 @@
                                 <div class="">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary">Delete</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="staticRename" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Rename</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form th:action="@{/api/v1/storage/rename}" th:method="POST">
+                                <div class="mb-3">
+                                    <label for="old-name" class="col-form-label">Current name</label>
+                                    <input type="text" class="form-control" id="old-name" name="old-name" readonly>
+                                    <label for="new-name" class="col-form-label">New name</label>
+                                    <input type="text" class="form-control" id="new-name" name="new-name">
+                                </div>
+                                <div class="">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Rename</button>
                                 </div>
                             </form>
                         </div>

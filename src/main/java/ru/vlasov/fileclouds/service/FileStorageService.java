@@ -20,10 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -63,41 +60,44 @@ public class FileStorageService {
 
     public void createFolder(String path) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
-        if (!path.endsWith("/") && !path.isEmpty()) {
-            path = path + "/";
-        }
-
-        String objectValue = getRootFolder() + path;
+        path = checkAndMakeStringEndingWithSlash(path);
+        String fullPath = getRootFolder() + path;
 
         minioClient.putObject(PutObjectArgs
                 .builder()
                 .bucket(rootBucketName)
-                .object(objectValue)
+                .object(fullPath)
                 .stream(new ByteArrayInputStream(new byte[]{}), 0, -1)
                 .build());
     }
 
-    public void createRootUserFolder(String folder) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-
-        if (!folder.endsWith("/")) {
-            folder = folder + "/";
+    @NotNull
+    private static String checkAndMakeStringEndingWithSlash(String string) {
+        if (!string.endsWith("/")) {
+            string = string + "/";
         }
+        return string;
+    }
+
+    public void createRootUserDirectory(String rootDirectory) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+
+        rootDirectory = checkAndMakeStringEndingWithSlash(rootDirectory);
 
         minioClient.putObject(PutObjectArgs
                 .builder()
                 .bucket(rootBucketName)
-                .object(folder)
+                .object(rootDirectory)
                 .stream(new ByteArrayInputStream(new byte[]{}), 0, -1)
                 .build());
     }
 
     public List<StorageDto> getFilesAndDirectories(String directory) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-//        log.info("Directory name -> {}", directory);
+        String fullPath = getRootFolder() + directory;
         Iterable<Result<Item>> results = minioClient.listObjects(
                 ListObjectsArgs
                         .builder()
                         .bucket(rootBucketName)
-                        .prefix(getRootFolder() + directory)
+                        .prefix(fullPath)
                         .build());
 
         List<StorageDto> storageDtoList = new ArrayList<>();
@@ -135,7 +135,104 @@ public class FileStorageService {
         }
     }
 
-    @NotNull
+    public void uploadFile(String bucket, String sourcePath) throws ServerException,
+            InsufficientDataException,
+            ErrorResponseException,
+            IOException,
+            NoSuchAlgorithmException,
+            InvalidKeyException,
+            InvalidResponseException,
+            XmlParserException,
+            InternalException {
+        String[] paths = sourcePath.split(Pattern.quote(File.separator));
+        String fileName = paths[paths.length - 1];
+        minioClient.uploadObject(
+                UploadObjectArgs.builder()
+                        .bucket(bucket)
+                        .object(fileName)
+                        .filename(sourcePath)
+                        .build());
+    }
+
+    public void rename(String oldName, String newName, String path) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+
+        if (!oldName.endsWith("/")) {
+
+            newName = checkAndMakeNameWithPostfix(newName, oldName);
+            minioClient.copyObject(CopyObjectArgs
+                    .builder()
+                            .bucket(rootBucketName)
+                            .object(getRootFolder() + path + newName)
+                            .source(CopySource
+                                    .builder()
+                                    .bucket(rootBucketName)
+                                    .object(getRootFolder() + path + oldName)
+                                    .build())
+                    .build());
+
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(rootBucketName)
+                            .object(getRootFolder() + path + oldName)
+                            .build()
+            );
+
+        } else {
+            newName = checkAndMakeStringEndingWithSlash(newName);
+            List<String> fullPathsName = getAllfullPathNameObjectsWithParent(path + oldName);
+            for (String fullPath:fullPathsName) {
+                String newFullPath = fullPath.replace(path + oldName, path + newName);
+
+                if (newFullPath.endsWith("/")) {
+                    minioClient.putObject(PutObjectArgs
+                            .builder()
+                            .bucket(rootBucketName)
+                            .object(newFullPath)
+                            .stream(new ByteArrayInputStream(new byte[]{}), 0, -1)
+                            .build());
+                } else {
+                    minioClient.copyObject(CopyObjectArgs
+                            .builder()
+                            .bucket(rootBucketName)
+                            .object(newFullPath)
+                            .source(CopySource
+                                    .builder()
+                                    .bucket(rootBucketName)
+                                    .object(fullPath)
+                                    .build())
+                            .build());
+                }
+                
+                minioClient.removeObject(
+                        RemoveObjectArgs.builder()
+                                .bucket(rootBucketName)
+                                .object(fullPath)
+                                .build()
+                );
+            }
+        }
+    }
+
+    private String getRootFolder() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
+        return "user-" + appUserDetails.getAppUser().getId() + "-files/";
+    }
+
+    private String checkAndMakeNameWithPostfix(String newName, String oldName) {
+        String[] oldNameSplit = oldName.split("\\.");
+        String oldPostfix = oldNameSplit[oldNameSplit.length - 1];
+
+        String[] newNameSplit = newName.split("\\.");
+        String newPostfix = newNameSplit[newNameSplit.length - 1];
+
+        if (!newPostfix.equals(oldPostfix)) {
+            newName = newName + "." + oldPostfix;
+        }
+
+        return newName;
+    }
+
     private List<String> getAllfullPathNameObjectsWithParent(String folderName) throws ErrorResponseException, InsufficientDataException, InternalException, InvalidKeyException, InvalidResponseException, IOException, NoSuchAlgorithmException, ServerException, XmlParserException {
         Queue<String> folders = new PriorityQueue<>();
         folders.add(getRootFolder() + folderName);
@@ -159,30 +256,5 @@ public class FileStorageService {
             }
         }
         return objectsName;
-    }
-
-    public void uploadFile(String bucket, String sourcePath) throws ServerException,
-            InsufficientDataException,
-            ErrorResponseException,
-            IOException,
-            NoSuchAlgorithmException,
-            InvalidKeyException,
-            InvalidResponseException,
-            XmlParserException,
-            InternalException {
-        String[] paths = sourcePath.split(Pattern.quote(File.separator));
-        String fileName = paths[paths.length - 1];
-        minioClient.uploadObject(
-                UploadObjectArgs.builder()
-                        .bucket(bucket)
-                        .object(fileName)
-                        .filename(sourcePath)
-                        .build());
-    }
-
-    private String getRootFolder() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
-        return "user-" + appUserDetails.getAppUser().getId() + "-files/";
     }
 }

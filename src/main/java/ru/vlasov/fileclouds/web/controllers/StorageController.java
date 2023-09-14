@@ -54,15 +54,6 @@ public class StorageController {
         return "redirect:/home?path=" + createPath;
     }
 
-    @PostMapping("/rename")
-    public String rename(@RequestParam("sourceFolder") String sourceFolder,
-                         @RequestParam("destFolder") String destFolder) {
-
-
-
-        return "redirect: /home";
-    }
-
     @PostMapping("/delete")
     public String delete(@RequestParam("delete-name") String deleteName, HttpSession session) {
         String path = (String) session.getAttribute("path");
@@ -75,7 +66,26 @@ public class StorageController {
             throw new RuntimeException(e);
         }
 
+        return "redirect:/home?path=" + path;
+    }
+
+    @PostMapping("/rename")
+    public String rename(@RequestParam("old-name") String oldName, @RequestParam("new-name") String newName, HttpSession session) {
+        String path = (String) session.getAttribute("path");
+        log.info("old-name -> {}", oldName);
+        log.info("new-name -> {}", newName);
+        log.info("path -> {}", path);
+
+        try {
+            storageService.rename(oldName, newName, path);
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new RuntimeException(e);
+        }
 
         return "redirect:/home?path=" + path;
     }
+
+
 }

@@ -36,21 +36,15 @@ public class HomeController {
     }
 
     @GetMapping
-    public String home(@RequestParam(value = "path", required = false) String path, Model model, HttpSession session) {
+    public String home(@RequestParam(value = "path", defaultValue = "", required = false) String path, Model model, HttpSession session) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = !(authentication instanceof AnonymousAuthenticationToken);
         model.addAttribute("isAuthenticated", isAuthenticated);
         session.setAttribute("path", path);
 
-
-        AppUserDetails appUserDetails = null;
-        if (isAuthenticated) {
-            appUserDetails = (AppUserDetails) authentication.getPrincipal();
-        }
-
         Breadcrumbs breadcrumbs;
-        if (path == null || path.isEmpty()) {
+        if (path.isEmpty()) {
             breadcrumbs = null;
         } else {
             breadcrumbs = Util.getBreadcrumbs(path);

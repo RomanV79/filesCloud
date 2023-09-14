@@ -51,7 +51,7 @@ public class RegisterController {
         try {
             AppUser appUser = userService.save(userDto);
             String rootFolderCurrentUser = "user-" + appUser.getId() + "-files";
-            storageService.createRootUserFolder(rootFolderCurrentUser);
+            storageService.createRootUserDirectory(rootFolderCurrentUser);
         } catch (UserExistException e) {
             model.addAttribute("errorLogin", e.getMessage());
             return "register";

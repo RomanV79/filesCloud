@@ -5,13 +5,13 @@ import io.minio.errors.*;
 import io.minio.messages.Item;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import ru.vlasov.fileclouds.config.security.AppUserDetails;
-import ru.vlasov.fileclouds.web.dto.Breadcrumbs;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
 import ru.vlasov.fileclouds.web.dto.Util;
 
@@ -22,6 +22,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -59,22 +61,13 @@ public class FileStorageService {
         }
     }
 
-    public void createFolder(String path) throws ServerException,
-            InsufficientDataException,
-            ErrorResponseException,
-            IOException,
-            NoSuchAlgorithmException,
-            InvalidKeyException,
-            InvalidResponseException,
-            XmlParserException,
-            InternalException {
+    public void createFolder(String path) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
         if (!path.endsWith("/") && !path.isEmpty()) {
             path = path + "/";
         }
 
-        String objectValue = getRootFolder() + "/" + path;
-        log.info("Create folder, objectValue -> {}", objectValue);
+        String objectValue = getRootFolder() + path;
 
         minioClient.putObject(PutObjectArgs
                 .builder()
@@ -84,15 +77,7 @@ public class FileStorageService {
                 .build());
     }
 
-    public void createRootUserFolder(String folder) throws ServerException,
-            InsufficientDataException,
-            ErrorResponseException,
-            IOException,
-            NoSuchAlgorithmException,
-            InvalidKeyException,
-            InvalidResponseException,
-            XmlParserException,
-            InternalException {
+    public void createRootUserFolder(String folder) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
         if (!folder.endsWith("/")) {
             folder = folder + "/";
@@ -107,13 +92,12 @@ public class FileStorageService {
     }
 
     public List<StorageDto> getFilesAndDirectories(String directory) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
-
-        log.info("Root folder -> {}", getRootFolder());
+//        log.info("Directory name -> {}", directory);
         Iterable<Result<Item>> results = minioClient.listObjects(
                 ListObjectsArgs
                         .builder()
                         .bucket(rootBucketName)
-                        .prefix(getRootFolder() +"/" + directory)
+                        .prefix(getRootFolder() + directory)
                         .build());
 
         List<StorageDto> storageDtoList = new ArrayList<>();
@@ -126,6 +110,55 @@ public class FileStorageService {
         }
 
         return storageDtoList;
+    }
+
+    public void delete(String deleteName) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
+        if (!deleteName.endsWith("/")) {
+            String fullPath = getRootFolder() + deleteName;
+            minioClient.removeObject(
+                    RemoveObjectArgs.builder()
+                            .bucket(rootBucketName)
+                            .object(fullPath)
+                            .build()
+            );
+        } else {
+            List<String> fullPathsName = getAllfullPathNameObjectsWithParent(deleteName);
+
+            for (String fullPath:fullPathsName) {
+                minioClient.removeObject(
+                        RemoveObjectArgs.builder()
+                                .bucket(rootBucketName)
+                                .object(fullPath)
+                                .build()
+                );
+            }
+        }
+    }
+
+    @NotNull
+    private List<String> getAllfullPathNameObjectsWithParent(String folderName) throws ErrorResponseException, InsufficientDataException, InternalException, InvalidKeyException, InvalidResponseException, IOException, NoSuchAlgorithmException, ServerException, XmlParserException {
+        Queue<String> folders = new PriorityQueue<>();
+        folders.add(getRootFolder() + folderName);
+
+        List<String> objectsName = new ArrayList<>();
+        objectsName.add(getRootFolder() + folderName);
+
+        while (!folders.isEmpty()) {
+            Iterable<Result<Item>> results = minioClient.listObjects(
+                    ListObjectsArgs
+                            .builder()
+                            .bucket(rootBucketName)
+                            .prefix(folders.remove())
+                            .build());
+
+            for (Result<Item> item : results) {
+                if (item.get().isDir()) {
+                    folders.add(item.get().objectName());
+                }
+                objectsName.add(item.get().objectName());
+            }
+        }
+        return objectsName;
     }
 
     public void uploadFile(String bucket, String sourcePath) throws ServerException,
@@ -150,11 +183,6 @@ public class FileStorageService {
     private String getRootFolder() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
-        return "user-" + appUserDetails.getAppUser().getId() + "-files";
-    }
-
-    public Breadcrumbs getBreadcrumbs(String path) {
-
-        return null;
+        return "user-" + appUserDetails.getAppUser().getId() + "-files/";
     }
 }

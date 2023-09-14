@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -16,7 +14,6 @@ public class Util {
 
     public static StorageDto convertItemToStorageDto(Item item) {
 
-        log.info("Item name -> {}", item.objectName());
         // если объект не директория но его имя заканчивается на "/" - значит это объект призрак созданный для пустой директории
         if (!item.isDir() && item.objectName().endsWith("/")) return null;
 
@@ -25,7 +22,6 @@ public class Util {
         String[] paths = Arrays.copyOfRange(fullPaths, 1, fullPaths.length);
 
         if (paths.length == 0) return null;
-        log.info("paths -> {}", Arrays.toString(paths));
 
         if (item.isDir()) {
             storageDto.setName(paths[paths.length - 1] + "/");

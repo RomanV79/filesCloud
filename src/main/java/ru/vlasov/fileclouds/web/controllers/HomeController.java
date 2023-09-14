@@ -47,10 +47,7 @@ public class HomeController {
         AppUserDetails appUserDetails = null;
         if (isAuthenticated) {
             appUserDetails = (AppUserDetails) authentication.getPrincipal();
-            log.info("User -> {}", appUserDetails.getAppUser());
         }
-
-        log.info("User isAuthenticated -> {}", isAuthenticated);
 
         Breadcrumbs breadcrumbs;
         if (path == null || path.isEmpty()) {
@@ -58,7 +55,6 @@ public class HomeController {
         } else {
             breadcrumbs = Util.getBreadcrumbs(path);
         }
-        log.info("Path -> {}", path);
 
         List<StorageDto> storageDtoList = null;
         try {

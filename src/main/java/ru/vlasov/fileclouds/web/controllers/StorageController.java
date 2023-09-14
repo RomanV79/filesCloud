@@ -2,7 +2,7 @@ package ru.vlasov.fileclouds.web.controllers;
 
 import io.minio.errors.*;
 import jakarta.servlet.http.HttpSession;
-import org.apache.tomcat.util.http.parser.HttpParser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,18 +14,19 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+@Slf4j
 @Controller
-@RequestMapping("storage/folder/")
-public class FolderController {
+@RequestMapping("api/v1/storage/")
+public class StorageController {
     private final FileStorageService storageService;
 
     @Autowired
-    public FolderController(FileStorageService storageService) {
+    public StorageController(FileStorageService storageService) {
         this.storageService = storageService;
     }
 
 
-    @PostMapping("/create")
+    @PostMapping("folder/create")
     public String create(@RequestParam("folder-name") String folderName, HttpSession session) {
 
         String createPath = (String) session.getAttribute("path");
@@ -51,5 +52,30 @@ public class FolderController {
             throw new RuntimeException(e);
         }
         return "redirect:/home?path=" + createPath;
+    }
+
+    @PostMapping("/rename")
+    public String rename(@RequestParam("sourceFolder") String sourceFolder,
+                         @RequestParam("destFolder") String destFolder) {
+
+
+
+        return "redirect: /home";
+    }
+
+    @PostMapping("/delete")
+    public String delete(@RequestParam("delete-name") String deleteName, HttpSession session) {
+        String path = (String) session.getAttribute("path");
+        log.info("delete-name -> {}", deleteName);
+        try {
+            storageService.delete(deleteName);
+        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
+                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                 InternalException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        return "redirect:/home?path=" + path;
     }
 }

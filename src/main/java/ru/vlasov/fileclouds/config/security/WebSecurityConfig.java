@@ -28,7 +28,7 @@ public class WebSecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> {
                     authorize.requestMatchers("/register/**").permitAll()
-                            .requestMatchers("css/**", "/img/**").permitAll()
+                            .requestMatchers("css/**", "js/**", "img/**").permitAll()
                             .requestMatchers("/test/**").permitAll()
                             .requestMatchers("/home").permitAll()
                             .requestMatchers("/login").permitAll()
@@ -42,7 +42,8 @@ public class WebSecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .permitAll());
+                        .permitAll())
+                .csrf((csrf) -> csrf.disable());
         return http.build();
     }
 

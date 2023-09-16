@@ -1,0 +1,22 @@
+
+.dropzone {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: lightgray;
+    border: grey dashed 1px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.dropzone-over {
+    border-style: solid;
+    background-color: #F0F0F0;
+}
+
+.dropzone-input {
+    display: none;
+}

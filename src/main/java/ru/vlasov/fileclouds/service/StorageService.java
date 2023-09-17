@@ -43,27 +43,6 @@ public class StorageService {
         this.minioRepository = minioRepository;
     }
 
-    @PostConstruct
-    public void createAppRootBucket() {
-        try {
-            if (!minioClient.bucketExists(BucketExistsArgs
-                    .builder()
-                    .bucket(rootBucketName)
-                    .build())
-            ) {
-                minioClient.makeBucket(
-                        MakeBucketArgs
-                                .builder()
-                                .bucket(rootBucketName)
-                                .build());
-            }
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidResponseException |
-                 NoSuchAlgorithmException | IOException | ServerException | XmlParserException |
-                 InvalidKeyException e) {
-            throw new RuntimeException("Storage service doesn't answer");
-        }
-    }
-
     public void createFolder(String path) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {
 
         path = checkAndMakeStringEndingWithSlash(path);

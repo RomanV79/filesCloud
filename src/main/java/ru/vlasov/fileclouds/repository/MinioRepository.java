@@ -1,9 +1,8 @@
 package ru.vlasov.fileclouds.repository;
 
-import io.minio.MinioClient;
-import io.minio.ObjectWriteResponse;
-import io.minio.PutObjectArgs;
+import io.minio.*;
 import io.minio.errors.*;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,28 @@ public class MinioRepository {
         this.minioClient = minioClient;
     }
 
-    public boolean uploadFile(String fullPath, @NotNull MultipartFile multipartFile) throws UploadErrorException, BrokenFileException {
+    @PostConstruct
+    public void createAppRootBucket() {
+        try {
+            if (!minioClient.bucketExists(BucketExistsArgs
+                    .builder()
+                    .bucket(rootBucketName)
+                    .build())
+            ) {
+                minioClient.makeBucket(
+                        MakeBucketArgs
+                                .builder()
+                                .bucket(rootBucketName)
+                                .build());
+            }
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidResponseException |
+                 NoSuchAlgorithmException | IOException | ServerException | XmlParserException |
+                 InvalidKeyException e) {
+            throw new RuntimeException("Storage service doesn't answer");
+        }
+    }
+
+    public void uploadFile(String fullPath, @NotNull MultipartFile multipartFile) throws UploadErrorException, BrokenFileException {
 
         InputStream inputStream = null;
         try {
@@ -41,12 +61,12 @@ public class MinioRepository {
             throw new BrokenFileException("The file is corrupted and cannot be downloaded");
         }
 
-        log.info("=============");
-        log.info("bucket - > {} /n", rootBucketName);
-        log.info("fullPath -> {}", fullPath);
-        log.info("filename -> {}", multipartFile.getOriginalFilename());
-        log.info("contentType -> {}", multipartFile.getContentType());
-        log.info("=============");
+//        log.info("=============");
+//        log.info("bucket - > {} /n", rootBucketName);
+//        log.info("fullPath -> {}", fullPath);
+//        log.info("filename -> {}", multipartFile.getOriginalFilename());
+//        log.info("contentType -> {}", multipartFile.getContentType());
+//        log.info("=============");
         try {
             ObjectWriteResponse response = minioClient.putObject(PutObjectArgs
                     .builder()
@@ -63,7 +83,5 @@ public class MinioRepository {
                  XmlParserException e) {
             throw new UploadErrorException("The file was not uploaded, storage server error");
         }
-
-        return true;
     }
 }

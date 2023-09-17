@@ -27,7 +27,6 @@ public class AppUserServiceImpl implements AppUserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
     @Override
     public AppUser save(UserDto userDto) throws UserExistException {
         AppUser appUser = new AppUser();

@@ -37,11 +37,13 @@ const inputElement = document.querySelector('.dropzone-input');
 const dropzone = document.querySelector('.dropzone');
 
 dropzone.addEventListener("dragover", handleDragOver, false)
+
 function handleDragOver(e) {
     e.preventDefault();
     dropzone.classList.add("dropzone-over");
 }
-["dragleave", "dragend"]. forEach(type => {
+
+["dragleave", "dragend"].forEach(type => {
     dropzone.addEventListener(type, evt => {
         dropzone.classList.remove("dropzone-over");
     })
@@ -53,7 +55,9 @@ dropzone.addEventListener("click", evt => {
 })
 inputElement.addEventListener("change", evt => {
     console.log(evt)
+    console.log(inputElement.files)
     if (inputElement.files.length) {
+        sendFiles(inputElement.files)
         dropzoneMessage.innerHTML = "<span style='color: forestgreen'>Uploaded: " + inputElement.files.length + " file(s)</span>"
         setTimeout(function () {
             dropzoneMessage.textContent = "Drag and drop files here"
@@ -65,6 +69,7 @@ inputElement.addEventListener("change", evt => {
 const dropzoneMessage = document.querySelector(".dropzone-message");
 
 dropzone.addEventListener("drop", handleDrop, false)
+
 function handleDrop(e) {
     e.preventDefault();
     // console.log(e.dataTransfer.files)
@@ -72,6 +77,8 @@ function handleDrop(e) {
     if (e.dataTransfer.files.length) {
         inputElement.files = e.dataTransfer.files;
     }
+    console.log(inputElement.files)
+    sendFiles(inputElement.files)
 
     dropzone.classList.remove("dropzone-over")
 
@@ -83,51 +90,21 @@ function handleDrop(e) {
     }, 2000)
 }
 
+function sendFiles(listFile) {
 
-// document.querySelectorAll(".dropzone-input").forEach(inputElement => {
-//     const dropZoneElement = inputElement.closest(".dropzone");
-//
-//     dropZoneElement.addEventListener('dragover', evt => {
-//         dropZoneElement.classList.add('.dropzone-over');
-//     })
-// })
-
-
-// dropzone.addEventListener()
-// dropzone.addEventListener('dragover', handleDragOver, false);
-// dropzone.addEventListener('drop', handleDrop, false);
-
-
-
-// function handleDragOver(event) {
-//     console.log("over box")
-//     event.stopPropagation();
-//     event.preventDefault();
-//     event.dataTransfer.dropEffect = 'copy'; // Visual cue that files can be dropped
-// }
-
-// function handleDrop(event) {
-//     event.stopPropagation();
-//     event.preventDefault();
-//     var files = event.dataTransfer.files; // List of dropped files
-//     var data = new FormData();
-//     for (var i = 0; i < files.length; i++) {
-//         data.append('file[]', files[i]); // Add each file to FormData object
-//     }
-//     // Use AJAX to upload files to server
-//     $.ajax({
-//         url: '#',
-//         type: 'POST',
-//         data: data,
-//         processData: false,
-//         contentType: false,
-//         success: function(response) {
-//             console.log(response);
-//         },
-//         error: function(xhr, status, error) {
-//             console.log(error);
-//         }
-//     });
-// }
+        for (let i = 0; i < listFile.length; i++) {
+            const data = new FormData();
+            data.append('file', listFile[i])
+            fetch('api/v1/storage/upload', {
+                method: 'POST',
+                body: data
+            }).then(data => {
+                console.log('Server response:', data);
+                if (i === listFile.length - 1) {
+                    window.location.reload(true)
+                }
+            });
+        }
+    }
 
 

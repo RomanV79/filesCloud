@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import ru.vlasov.fileclouds.service.FileStorageService;
+import ru.vlasov.fileclouds.service.StorageService;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -17,12 +17,12 @@ import java.security.NoSuchAlgorithmException;
 @Controller
 public class TestController {
 
-    private final FileStorageService storageService;
+    private final StorageService storageService;
     private final MinioClient minioClient;
 
 
     @Autowired
-    public TestController(FileStorageService storageService, MinioClient minioClient) {
+    public TestController(StorageService storageService, MinioClient minioClient) {
         this.storageService = storageService;
         this.minioClient = minioClient;
     }

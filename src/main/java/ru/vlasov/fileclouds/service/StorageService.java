@@ -11,7 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import ru.vlasov.fileclouds.config.security.AppUserDetails;
+import ru.vlasov.fileclouds.customException.BrokenFileException;
+import ru.vlasov.fileclouds.customException.UploadErrorException;
+import ru.vlasov.fileclouds.repository.MinioRepository;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
 import ru.vlasov.fileclouds.web.dto.Util;
 
@@ -25,16 +29,18 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Service
-public class FileStorageService {
+public class StorageService {
 
     @Value("${minio.root_bucket_name}")
     private String rootBucketName;
 
     private final MinioClient minioClient;
+    private final MinioRepository minioRepository;
 
     @Autowired
-    public FileStorageService(MinioClient minioClient) {
+    public StorageService(MinioClient minioClient, MinioRepository minioRepository) {
         this.minioClient = minioClient;
+        this.minioRepository = minioRepository;
     }
 
     @PostConstruct
@@ -135,23 +141,11 @@ public class FileStorageService {
         }
     }
 
-    public void uploadFile(String bucket, String sourcePath) throws ServerException,
-            InsufficientDataException,
-            ErrorResponseException,
-            IOException,
-            NoSuchAlgorithmException,
-            InvalidKeyException,
-            InvalidResponseException,
-            XmlParserException,
-            InternalException {
-        String[] paths = sourcePath.split(Pattern.quote(File.separator));
-        String fileName = paths[paths.length - 1];
-        minioClient.uploadObject(
-                UploadObjectArgs.builder()
-                        .bucket(bucket)
-                        .object(fileName)
-                        .filename(sourcePath)
-                        .build());
+    public void uploadFile(String path, MultipartFile multipartFile) throws BrokenFileException, UploadErrorException {
+        log.info("Start upload service");
+        String fullPath = getRootFolder() + path;
+        minioRepository.uploadFile(fullPath, multipartFile);
+        log.info("End upload service");
     }
 
     public void rename(String oldName, String newName, String path) throws ServerException, InsufficientDataException, ErrorResponseException, IOException, NoSuchAlgorithmException, InvalidKeyException, InvalidResponseException, XmlParserException, InternalException {

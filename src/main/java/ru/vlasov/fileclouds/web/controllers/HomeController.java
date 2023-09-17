@@ -12,8 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.vlasov.fileclouds.config.security.AppUserDetails;
-import ru.vlasov.fileclouds.service.FileStorageService;
+import ru.vlasov.fileclouds.service.StorageService;
 import ru.vlasov.fileclouds.web.dto.Breadcrumbs;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
 import ru.vlasov.fileclouds.web.dto.Util;
@@ -28,10 +27,10 @@ import java.util.List;
 @RequestMapping("/home")
 public class HomeController {
 
-    private final FileStorageService storageService;
+    private final StorageService storageService;
 
     @Autowired
-    public HomeController(FileStorageService storageService) {
+    public HomeController(StorageService storageService) {
         this.storageService = storageService;
     }
 
@@ -41,6 +40,7 @@ public class HomeController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         boolean isAuthenticated = !(authentication instanceof AnonymousAuthenticationToken);
         model.addAttribute("isAuthenticated", isAuthenticated);
+
         session.setAttribute("path", path);
 
         Breadcrumbs breadcrumbs;

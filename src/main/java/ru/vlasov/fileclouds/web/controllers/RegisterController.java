@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.vlasov.fileclouds.customException.UserExistException;
 import ru.vlasov.fileclouds.service.AppUserServiceImpl;
-import ru.vlasov.fileclouds.service.FileStorageService;
+import ru.vlasov.fileclouds.service.StorageService;
 import ru.vlasov.fileclouds.user.AppUser;
 import ru.vlasov.fileclouds.web.dto.UserDto;
 
@@ -27,9 +27,9 @@ import java.security.NoSuchAlgorithmException;
 public class RegisterController {
 
     private final AppUserServiceImpl userService;
-    private final FileStorageService storageService;
+    private final StorageService storageService;
 
-    public RegisterController(AppUserServiceImpl userService, FileStorageService storageService) {
+    public RegisterController(AppUserServiceImpl userService, StorageService storageService) {
         this.userService = userService;
         this.storageService = storageService;
     }

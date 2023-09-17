@@ -63,15 +63,6 @@
                     </div>
                 </div>
                 <div class="col">
-                    <!--                        <form class="row" action="">-->
-                    <!--                            <div class="col-2">-->
-                    <!--                                <button type="submit" class="btn btn-primary float-end">Upload file</button>-->
-                    <!--                            </div>-->
-                    <!--                            <div class="col">-->
-                    <!--                                &lt;!&ndash;                        <label for="formFile" class="form-label">Choose files for upload</label>&ndash;&gt;-->
-                    <!--                                <input class="form-control" type="file" id="formFile">-->
-                    <!--                            </div>-->
-                    <!--                        </form>-->
                     <div class="dropzone">
                         <input type="file" name="file[]" multiple class="dropzone-input">
                         <p class="dropzone-message m-0">Drag and drop files here</p>
@@ -81,7 +72,7 @@
 
             <div class="d-flex mb-2">
                 <div class="d-inline-block">
-                    <a class="bg-dark bg-gradient text-light p-1" th:href="'?path='" th:text="home"></a>
+                    <a class="bg-dark bg-gradient text-light p-1 me-1" th:href="'?path='" th:text="home"></a>
                 </div>
                 <div th:unless="${breadcrumbs == null}">
                     <div class="d-inline-block" th:each="segment, status : ${breadcrumbs.listSegments}">
@@ -91,7 +82,6 @@
                            th:text="${segment}"></a>
                     </div>
                 </div>
-
             </div>
             <div>
                 <table class="table table-hover">
@@ -116,7 +106,6 @@
                         <td th:unless="${file.size == 0}"
                             th:text="${#numbers.formatDecimal(file.size, 2, 'WHITESPACE', 0, 'POINT')} + ' B'"></td>
                         <td>
-                            <!--                            <button type="button" class="btn btn-secondary pt-0 pb-0" th:id="${status.index}" onClick="del(this.id)" >delete</button>-->
                             <button type="button" class="btn btn-secondary pt-0 pb-0" th:id="${status.index}"
                                     th:attr="data-name=${file.name}"
                                     data-bs-toggle="modal" data-bs-target="#staticDelete">delete

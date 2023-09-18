@@ -1,6 +1,5 @@
 package ru.vlasov.fileclouds.web.controllers;
 
-import io.minio.errors.*;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -12,15 +11,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import ru.vlasov.fileclouds.customException.StorageErrorException;
 import ru.vlasov.fileclouds.customException.UserExistException;
 import ru.vlasov.fileclouds.service.AppUserServiceImpl;
 import ru.vlasov.fileclouds.service.StorageService;
 import ru.vlasov.fileclouds.user.AppUser;
 import ru.vlasov.fileclouds.web.dto.UserDto;
-
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 @Controller
@@ -55,9 +51,7 @@ public class RegisterController {
         } catch (UserExistException e) {
             model.addAttribute("errorLogin", e.getMessage());
             return "register";
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidResponseException | InvalidKeyException | InternalException |
-                 XmlParserException e) {
+        } catch (StorageErrorException e) {
             throw new RuntimeException(e);
         }
 

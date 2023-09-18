@@ -1,6 +1,5 @@
 package ru.vlasov.fileclouds.web.controllers;
 
-import io.minio.errors.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +11,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.vlasov.fileclouds.customException.StorageErrorException;
 import ru.vlasov.fileclouds.service.StorageService;
 import ru.vlasov.fileclouds.web.dto.Breadcrumbs;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
 import ru.vlasov.fileclouds.web.dto.Util;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Slf4j
@@ -53,9 +50,7 @@ public class HomeController {
         List<StorageDto> storageDtoList = null;
         try {
             storageDtoList = storageService.getFilesAndDirectories(path);
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+        } catch (StorageErrorException e) {
             throw new RuntimeException(e);
         }
         model.addAttribute("breadcrumbs", breadcrumbs);

@@ -1,23 +1,17 @@
 package ru.vlasov.fileclouds.web.controllers;
 
-import io.minio.errors.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.vlasov.fileclouds.customException.BrokenFileException;
-import ru.vlasov.fileclouds.customException.UploadErrorException;
+import ru.vlasov.fileclouds.customException.StorageErrorException;
 import ru.vlasov.fileclouds.service.StorageService;
-
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 
 @Slf4j
 @Controller
@@ -35,39 +29,24 @@ public class StorageController {
     public String create(@RequestParam("folder-name") String folderName, HttpSession session) {
 
         String createPath = getPath(session);
-        if (createPath != null && !createPath.endsWith("/")) {
-            createPath = createPath + "/";
-        }
-        if (!folderName.endsWith("/")) {
-            folderName = folderName + "/";
-        }
-
-        String fullPath;
-        if (createPath != null) {
-            fullPath = createPath + folderName;
-        } else {
-            fullPath = folderName;
-        }
 
         try {
-            storageService.createFolder(fullPath);
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 InvalidKeyException | InvalidResponseException | XmlParserException | NoSuchAlgorithmException |
-                 InternalException e) {
+            storageService.createDirectory(createPath + folderName);
+        } catch (StorageErrorException e) {
             throw new RuntimeException(e);
         }
+
         return "redirect:/home?path=" + createPath;
     }
 
     @PostMapping("/delete")
     public String delete(@RequestParam("delete-name") String deleteName, HttpSession session) {
         String path = getPath(session);
-        log.info("delete-name -> {}", deleteName);
+        String fullPath = path + deleteName;
+
         try {
-            storageService.delete(deleteName);
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+            storageService.delete(fullPath);
+        } catch (StorageErrorException e) {
             throw new RuntimeException(e);
         }
 
@@ -83,12 +62,9 @@ public class StorageController {
 
         try {
             storageService.rename(oldName, newName, path);
-        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-                 InternalException e) {
+        } catch (StorageErrorException e) {
             throw new RuntimeException(e);
         }
-
         return "redirect:/home?path=" + path;
     }
 
@@ -103,7 +79,7 @@ public class StorageController {
             log.info("Upload service -> OK");
         } catch (BrokenFileException e) {
             throw new RuntimeException(e);
-        } catch (UploadErrorException e) {
+        } catch (StorageErrorException e) {
             throw new RuntimeException(e);
         }
         return "redirect:/home?path=" + path;

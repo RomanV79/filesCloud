@@ -20,8 +20,7 @@ import ru.vlasov.fileclouds.web.dto.Util;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -72,18 +71,17 @@ public class StorageService {
         return storageDtoList;
     }
 
-    public void delete(String deleteName) throws StorageErrorException {
-        String fullPath = getRootFolder() + deleteName;
-        if (!deleteName.endsWith("/")) {
+    public void delete(String path) throws StorageErrorException {
+        String fullPath = getRootFolder() + path;
+        if (!path.endsWith("/")) {
             minioRepository.delete(fullPath);
         } else {
-            List<String> fullPathsName = minioRepository.getAllfullPathNameObjectsWithParent(fullPath);
-            for (String path : fullPathsName) {
-                minioRepository.delete(path);
+            List<String> fullPathNames = minioRepository.getAllfullPathNameObjectsWithParent(fullPath);
+            for (String element : fullPathNames) {
+                minioRepository.delete(element);
             }
         }
     }
-
 
     public void rename(String oldName, String newName, String path) throws StorageErrorException {
 
@@ -128,5 +126,25 @@ public class StorageService {
         return newName;
     }
 
-
+    public void uploadDirectory(String path, MultipartFile[] multipartFiles) throws BrokenFileException, StorageErrorException {
+        Set<String> paths = new HashSet<>();
+        for (MultipartFile file:multipartFiles) {
+            if (Objects.requireNonNull(file.getOriginalFilename()).contains("/")) {
+                String[] elements = file.getOriginalFilename().split("/");
+                log.info("split element -> {}", Arrays.toString(elements));
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 0; i < elements.length - 1; i++) {
+                    stringBuilder.append(elements[i]).append("/");
+                    paths.add(stringBuilder.toString());
+                }
+            }
+            minioRepository.uploadFile(getRootFolder() + path, file);
+        }
+        log.info("set path element -> {}", paths.toString());
+        if (!paths.isEmpty()) {
+            for (String element:paths) {
+                minioRepository.createDirectory( getRootFolder() + element);
+            }
+        }
+    }
 }

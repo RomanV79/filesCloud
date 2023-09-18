@@ -15,6 +15,7 @@ import ru.vlasov.fileclouds.customException.StorageErrorException;
 import ru.vlasov.fileclouds.service.StorageService;
 import ru.vlasov.fileclouds.web.dto.Breadcrumbs;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
+import ru.vlasov.fileclouds.web.dto.UploadDirDto;
 import ru.vlasov.fileclouds.web.dto.Util;
 
 import java.util.List;
@@ -55,6 +56,9 @@ public class HomeController {
         }
         model.addAttribute("breadcrumbs", breadcrumbs);
         model.addAttribute("storageList", storageDtoList);
+
+        UploadDirDto uploadDirDto = new UploadDirDto();
+        model.addAttribute("uploadDirDto", uploadDirDto);
 
         return "home";
     }

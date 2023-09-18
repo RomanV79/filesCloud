@@ -30,7 +30,7 @@
                             Create folder
                         </button>
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#">
+                                data-bs-target="#staticUploadFolder">
                             Upload folder
                         </button>
                     </div>
@@ -55,6 +55,32 @@
                                                 Close
                                             </button>
                                             <button type="submit" class="btn btn-primary">Create</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="staticUploadFolder" data-bs-backdrop="static" data-bs-keyboard="false"
+                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Upload folder</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form th:action="@{/api/v1/storage/folder/upload}" th:method="POST" enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <input type="file" class="form-control" id="directory" name="directory" webkitdirectory multiple>
+                                        </div>
+                                        <div class="">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">Upload</button>
                                         </div>
                                     </form>
                                 </div>
@@ -137,7 +163,6 @@
                         <div class="modal-body">
                             <form th:action="@{/api/v1/storage/delete}" th:method="POST">
                                 <div class="mb-3">
-                                    <!--                                    <label for="delete-name" class="col-form-label">Name:</label>-->
                                     <input type="text" class="form-control" id="delete-name" name="delete-name"
                                            readonly>
                                 </div>

@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,6 +13,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.vlasov.fileclouds.customException.BrokenFileException;
 import ru.vlasov.fileclouds.customException.StorageErrorException;
 import ru.vlasov.fileclouds.service.StorageService;
+import ru.vlasov.fileclouds.web.dto.UploadDirDto;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -23,7 +27,6 @@ public class StorageController {
     public StorageController(StorageService storageService) {
         this.storageService = storageService;
     }
-
 
     @PostMapping("folder/create")
     public String create(@RequestParam("folder-name") String folderName, HttpSession session) {
@@ -39,10 +42,26 @@ public class StorageController {
         return "redirect:/home?path=" + createPath;
     }
 
+    @PostMapping("folder/upload")
+    public String uploadDir(@RequestParam("directory") MultipartFile[] multipartFiles, HttpSession session) {
+
+        String path = getPath(session);
+        log.info("path -> {}", path);
+        try {
+            storageService.uploadDirectory(path, multipartFiles);
+        } catch (BrokenFileException e) {
+            throw new RuntimeException(e);
+        } catch (StorageErrorException e) {
+            throw new RuntimeException(e);
+        }
+
+        return "redirect:/home?path=" + path;
+    }
+
     @PostMapping("/delete")
     public String delete(@RequestParam("delete-name") String deleteName, HttpSession session) {
         String path = getPath(session);
-        String fullPath = path + deleteName;
+        String fullPath = deleteName;
 
         try {
             storageService.delete(fullPath);
@@ -69,8 +88,8 @@ public class StorageController {
     }
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile multipartFile,
-                         RedirectAttributes redirectAttributes, HttpSession session) {
+    public String uploadFiles(@RequestParam("file") MultipartFile multipartFile,
+                              RedirectAttributes redirectAttributes, HttpSession session) {
         log.info("Start upload controller ->");
         String path = getPath(session);
         log.info("file name -> {}", multipartFile.getOriginalFilename());

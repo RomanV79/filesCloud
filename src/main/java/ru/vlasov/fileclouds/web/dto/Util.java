@@ -4,6 +4,7 @@ package ru.vlasov.fileclouds.web.dto;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.vlasov.fileclouds.repository.dto.TreeObjectMinio;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -57,6 +58,18 @@ public class Util {
         return storageDto;
     }
 
+    public static TreeObjectMinio convertItemToTreeObjectMinio(Item item) {
+        TreeObjectMinio object = new TreeObjectMinio();
+
+        object.setDir(item.isDir());
+        object.setParent(getParent(item.objectName()));
+        object.setName(getName(item.objectName()));
+
+
+
+        return object;
+    }
+
     public static Breadcrumbs getBreadcrumbs(String path) {
         if (path.isEmpty()) {
             return null;
@@ -73,5 +86,15 @@ public class Util {
         }
 
         return breadcrumbs;
+    }
+
+    private static String getName(String path) {
+        String[] element = path.split("/");
+        return element[element.length - 1];
+    }
+
+    private static String getParent(String path) {
+        String[] element = path.split("/");
+        return element[element.length - 2];
     }
 }

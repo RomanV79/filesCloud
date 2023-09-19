@@ -117,19 +117,28 @@ public class StorageController {
 
     @GetMapping(value = "/download")
     public void download(@RequestParam("path") String fullPath, HttpSession session, HttpServletResponse response) {
-//        String path = getPath(session);
+        String path = getPath(session);
+        log.info("path -> {}", path);
         log.info("fullPath -> {}", fullPath);
         String nameFile = getNameFromPath(fullPath);
 
         if (!fullPath.endsWith("/")) {
             try (InputStream stream = storageService.download(fullPath)) {
                 response.setHeader("Content-Disposition", "attachment; filename=" + nameFile);
+                response.setStatus(HttpServletResponse.SC_OK);
                 FileCopyUtils.copy(stream, response.getOutputStream());
             } catch (StorageErrorException | IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
-//            
+            response.setHeader("Content-Disposition", "attachment; filename=" + nameFile + ".zip");
+            try (ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream())) {
+                storageService.downloadZip(zipOut, fullPath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (StorageErrorException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -139,7 +148,7 @@ public class StorageController {
 
     private String getNameFromPath(String path) {
         String[] element = path.split("/");
-        return element[element.length -1 ];
+        return element[element.length - 1];
     }
 
 

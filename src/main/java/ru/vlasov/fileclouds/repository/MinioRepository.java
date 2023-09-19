@@ -14,7 +14,6 @@ import ru.vlasov.fileclouds.customException.BrokenFileException;
 import ru.vlasov.fileclouds.customException.StorageErrorException;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -153,6 +152,37 @@ public class MinioRepository {
     }
 
     public List<String> getAllfullPathNameObjectsWithParent(String fullPath) throws StorageErrorException {
+        Queue<String> folders = new PriorityQueue<>();
+        folders.add(fullPath);
+
+        List<String> objectsName = new ArrayList<>();
+        objectsName.add(fullPath);
+
+        while (!folders.isEmpty()) {
+            Iterable<Result<Item>> results = minioClient.listObjects(
+                    ListObjectsArgs
+                            .builder()
+                            .bucket(rootBucketName)
+                            .prefix(folders.remove())
+                            .build());
+
+            try {
+                for (Result<Item> item : results) {
+                    if (item.get().isDir()) {
+                        folders.add(item.get().objectName());
+                    }
+                    objectsName.add(item.get().objectName());
+                }
+            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
+                     InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
+                     XmlParserException e) {
+                throw new StorageErrorException("Storage server error");
+            }
+        }
+        return objectsName;
+    }
+
+    public List<String> getTreeObjectMinioListWithParent(String fullPath) throws StorageErrorException {
         Queue<String> folders = new PriorityQueue<>();
         folders.add(fullPath);
 

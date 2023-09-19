@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @Service
@@ -129,7 +131,7 @@ public class StorageService {
 
     public void uploadDirectory(String path, MultipartFile[] multipartFiles) throws BrokenFileException, StorageErrorException {
         Set<String> paths = new HashSet<>();
-        for (MultipartFile file:multipartFiles) {
+        for (MultipartFile file : multipartFiles) {
             if (Objects.requireNonNull(file.getOriginalFilename()).contains("/")) {
                 String[] elements = file.getOriginalFilename().split("/");
                 log.info("split element -> {}", Arrays.toString(elements));
@@ -143,13 +145,35 @@ public class StorageService {
         }
         log.info("set path element -> {}", paths.toString());
         if (!paths.isEmpty()) {
-            for (String element:paths) {
-                minioRepository.createDirectory( getRootFolder() + element);
+            for (String element : paths) {
+                minioRepository.createDirectory(getRootFolder() + element);
             }
         }
     }
 
     public InputStream download(String fullPath) throws StorageErrorException {
         return minioRepository.downloadFile(getRootFolder() + fullPath);
+    }
+
+    public ZipEntry downloadZip(ZipOutputStream zipOut, String fullPath) throws StorageErrorException, IOException {
+        String parentPath = getRootFolder() + fullPath;
+        List<String> listFileNamesWithParent = minioRepository.getAllfullPathNameObjectsWithParent(parentPath);
+        for (String fileName : listFileNamesWithParent) {
+            log.info("fileName in list -> {}", fileName);
+        }
+        for (String fileName : listFileNamesWithParent) {
+            if (!fileName.endsWith("/")) {
+                zipOut.putNextEntry(new ZipEntry(fileName.substring(parentPath.length())));
+                try (InputStream fis = minioRepository.downloadFile(fileName)) {
+                    byte[] buffer = new byte[1024];
+                    int len;
+                    while ((len = fis.read(buffer)) > 0) {
+                        zipOut.write(buffer, 0, len);
+                    }
+                }
+                zipOut.closeEntry();
+            }
+        }
+        return null;
     }
 }

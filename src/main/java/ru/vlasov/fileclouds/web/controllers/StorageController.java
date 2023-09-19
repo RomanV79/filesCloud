@@ -1,13 +1,19 @@
 package ru.vlasov.fileclouds.web.controllers;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.vlasov.fileclouds.customException.BrokenFileException;
@@ -15,7 +21,12 @@ import ru.vlasov.fileclouds.customException.StorageErrorException;
 import ru.vlasov.fileclouds.service.StorageService;
 import ru.vlasov.fileclouds.web.dto.UploadDirDto;
 
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @Controller
@@ -104,8 +115,52 @@ public class StorageController {
         return "redirect:/home?path=" + path;
     }
 
+    @GetMapping(value = "/download")
+    public void download(@RequestParam("path") String fullPath, HttpSession session, HttpServletResponse response) {
+//        String path = getPath(session);
+        log.info("fullPath -> {}", fullPath);
+        String nameFile = getNameFromPath(fullPath);
+
+        if (fullPath.endsWith("/")) {
+            try (InputStream stream = storageService.download(fullPath)) {
+                response.setHeader("Content-Disposition", "attachment; filename=" + nameFile);
+                FileCopyUtils.copy(stream, response.getOutputStream());
+            } catch (StorageErrorException | IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+//            response.setContentType("application/zip");
+//            response.setHeader("Content-Disposition", "attachment; filename=" + nameFile + ".zip");
+//            storageService.
+//
+//            try(ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream())) {
+//                for(String fileName : listOfFileNames) {
+//                    FileSystemResource fileSystemResource = new FileSystemResource(fileName);
+//                    ZipEntry zipEntry = new ZipEntry(fileSystemResource.getFilename());
+//                    zipEntry.setSize(fileSystemResource.contentLength());
+//                    zipEntry.setTime(System.currentTimeMillis());
+//
+//                    zipOutputStream.putNextEntry(zipEntry);
+//
+//                    StreamUtils.copy(fileSystemResource.getInputStream(), zipOutputStream);
+//                    zipOutputStream.closeEntry();
+//                }
+//                zipOutputStream.finish();
+//            } catch (IOException e) {
+//                logger.error(e.getMessage(), e);
+//            }
+
+
+        }
+    }
+
     private static String getPath(HttpSession session) {
         return (String) session.getAttribute("path");
+    }
+
+    private String getNameFromPath(String path) {
+        String[] element = path.split("/");
+        return element[element.length -1 ];
     }
 
 

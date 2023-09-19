@@ -14,6 +14,7 @@ import ru.vlasov.fileclouds.customException.BrokenFileException;
 import ru.vlasov.fileclouds.customException.StorageErrorException;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -189,4 +190,17 @@ public class MinioRepository {
         return string;
     }
 
+    public InputStream downloadFile(String fullPath) throws StorageErrorException {
+        try {
+            return minioClient.getObject(GetObjectArgs
+                    .builder()
+                    .bucket(rootBucketName)
+                    .object(fullPath)
+                    .build());
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
+                 InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
+                 XmlParserException e) {
+            throw new StorageErrorException("Storage server error");
+        }
+    }
 }

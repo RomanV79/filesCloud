@@ -18,6 +18,7 @@ import ru.vlasov.fileclouds.web.dto.StorageDto;
 import ru.vlasov.fileclouds.web.dto.Util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -146,5 +147,9 @@ public class StorageService {
                 minioRepository.createDirectory( getRootFolder() + element);
             }
         }
+    }
+
+    public InputStream download(String fullPath) throws StorageErrorException {
+        return minioRepository.downloadFile(getRootFolder() + fullPath);
     }
 }

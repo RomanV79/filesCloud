@@ -114,6 +114,7 @@
                     <thead>
                     <tr>
                         <th scope="col"></th>
+                        <th scope="col"><img th:src="@{/img/download_20.png}" alt=""></th>
                         <th scope="col">Name</th>
                         <th scope="col">Last modified</th>
                         <th scope="col">Size</th>
@@ -125,6 +126,7 @@
                     <tr th:each="file, status : ${storageList}">
                         <td th:if="${file.isDir}"><img th:src="@{/img/directory20.png}"/></td>
                         <td th:unless="${file.isDir}"><img th:src="@{/img/file20.png}"/></td>
+                        <td><a th:href="@{'/api/v1/storage/download?path=' + ${file.filePath} + ${file.name}}"><img th:src="@{/img/download_every_1.png}" alt=""/></a></td>
                         <td><a th:href="@{'?path=' + ${#strings.defaultString(file.filePath,'')} + ${file.name}}"
                                th:text="${file.name}" th:id="${status.index}">Name</a></td>
                         <td th:text="${file.lastModified}"></td>

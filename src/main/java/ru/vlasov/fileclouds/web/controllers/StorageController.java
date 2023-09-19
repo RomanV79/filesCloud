@@ -121,7 +121,7 @@ public class StorageController {
         log.info("fullPath -> {}", fullPath);
         String nameFile = getNameFromPath(fullPath);
 
-        if (fullPath.endsWith("/")) {
+        if (!fullPath.endsWith("/")) {
             try (InputStream stream = storageService.download(fullPath)) {
                 response.setHeader("Content-Disposition", "attachment; filename=" + nameFile);
                 FileCopyUtils.copy(stream, response.getOutputStream());
@@ -129,28 +129,7 @@ public class StorageController {
                 throw new RuntimeException(e);
             }
         } else {
-//            response.setContentType("application/zip");
-//            response.setHeader("Content-Disposition", "attachment; filename=" + nameFile + ".zip");
-//            storageService.
-//
-//            try(ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream())) {
-//                for(String fileName : listOfFileNames) {
-//                    FileSystemResource fileSystemResource = new FileSystemResource(fileName);
-//                    ZipEntry zipEntry = new ZipEntry(fileSystemResource.getFilename());
-//                    zipEntry.setSize(fileSystemResource.contentLength());
-//                    zipEntry.setTime(System.currentTimeMillis());
-//
-//                    zipOutputStream.putNextEntry(zipEntry);
-//
-//                    StreamUtils.copy(fileSystemResource.getInputStream(), zipOutputStream);
-//                    zipOutputStream.closeEntry();
-//                }
-//                zipOutputStream.finish();
-//            } catch (IOException e) {
-//                logger.error(e.getMessage(), e);
-//            }
-
-
+//            
         }
     }
 

@@ -13,35 +13,27 @@
 <div class="container">
     <header th:replace="~{fragments/header :: header (isAuthenticated=${isAuthenticated})}"></header>
     <div class="row col-md-8 offset-md-2">
-        <div class="card">
-            <div class="text-center">
-                <img class="mb-4" th:src="@{/img/files-cloud-small.png}" alt="" width="72">
-            </div>
+        <div class="card p-0">
             <div class="card-header">
                 <h2 class="text-center">Registration</h2>
             </div>
-<!--            <div th:if="${param.success}">-->
-<!--                <div class="alert alert-info">-->
-<!--                    You have successfully registered!-->
-<!--                </div>-->
-<!--            </div>-->
             <div class="card-body">
                 <form method="post" th:action="@{/register}" th:object="${user}">
                     <div class="form-group mb-3">
                         <label class="form-label">Login</label>
-                        <input class="form-control" id="firstName" name="username" placeholder="Enter login" th:field="*{username}" type="text"/>
+                        <input class="form-control" id="firstName" name="username" placeholder="Enter login"
+                               th:field="*{username}" type="text"/>
                         <p class="text-danger" th:if="errorLogin" th:text="${errorLogin}"></p>
                     </div>
-
                     <div class="form-group mb-3">
                         <label class="form-label">Password</label>
-                        <input class="form-control" id="password" name="password" placeholder="Enter password" type="password" minlength="6"
-                               th:field="*{password}" />
-<!--                        <p th:errors="*{password}" class="text-danger" th:if="${#fields.hasErrors('password')}"></p>-->
+                        <input class="form-control" id="password" name="password" placeholder="Enter password"
+                               type="password" minlength="6"
+                               th:field="*{password}"/>
                     </div>
                     <div class="form-group">
                         <button class="btn btn-primary" type="submit">Register</button>
-                        <span>Already registered? <a th:href="@{/login}">Login here</a></span>
+                        <span class="ms-2">Already registered? <a th:href="@{/login}">Login here</a></span>
                     </div>
                 </form>
             </div>

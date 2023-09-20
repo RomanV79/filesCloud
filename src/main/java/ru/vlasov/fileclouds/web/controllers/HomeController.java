@@ -18,6 +18,9 @@ import ru.vlasov.fileclouds.web.dto.StorageDto;
 import ru.vlasov.fileclouds.web.dto.UploadDirDto;
 import ru.vlasov.fileclouds.web.dto.Util;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -39,6 +42,7 @@ public class HomeController {
         boolean isAuthenticated = !(authentication instanceof AnonymousAuthenticationToken);
         model.addAttribute("isAuthenticated", isAuthenticated);
 
+        path = URLDecoder.decode(path, StandardCharsets.UTF_8);
         session.setAttribute("path", path);
 
         Breadcrumbs breadcrumbs;

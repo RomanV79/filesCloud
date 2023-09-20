@@ -18,6 +18,9 @@ import ru.vlasov.fileclouds.service.StorageService;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipOutputStream;
 
 @Slf4j
@@ -42,7 +45,7 @@ public class StorageController {
             throw new RuntimeException(e);
         }
 
-        return "redirect:/home?path=" + createPath;
+        return "redirect:/home?path=" + URLEncoder.encode(createPath, StandardCharsets.UTF_8);
     }
 
     @PostMapping("folder/upload")
@@ -58,7 +61,7 @@ public class StorageController {
             throw new RuntimeException(e);
         }
 
-        return "redirect:/home?path=" + path;
+        return "redirect:/home?path=" + URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
     @PostMapping("/delete")
@@ -72,7 +75,7 @@ public class StorageController {
             throw new RuntimeException(e);
         }
 
-        return "redirect:/home?path=" + path;
+        return "redirect:/home?path=" + URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
     @PostMapping("/rename")
@@ -87,7 +90,7 @@ public class StorageController {
         } catch (StorageErrorException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/home?path=" + path;
+        return "redirect:/home?path=" + URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
     @PostMapping("/upload")
@@ -104,7 +107,7 @@ public class StorageController {
         } catch (StorageErrorException e) {
             throw new RuntimeException(e);
         }
-        return "redirect:/home?path=" + path;
+        return "redirect:/home?path=" + URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
     @GetMapping(value = "/download")

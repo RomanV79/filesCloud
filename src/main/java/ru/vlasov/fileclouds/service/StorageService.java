@@ -5,7 +5,6 @@ import io.minio.errors.*;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -176,11 +175,12 @@ public class StorageService {
 
     public List<StorageDto> getFilesAndDirectoriesForQuery(String query) throws StorageErrorException {
         List<StorageDto> storageDtoList = new ArrayList<>();
-        List<Item> itemList = minioRepository.getAllObjectListFormDir(getRootFolder());
+        List<Item> itemList = minioRepository.getAllObjectListFromDir(getRootFolder());
         for (Item item:itemList) {
             StorageDto storageDto = Util.convertItemToStorageDto(item);
             assert storageDto != null;
-            if (storageDto.getName().contains(query)) {
+            log.info("equals -> {} : {}", storageDto.getName().toLowerCase(), query.toLowerCase());
+            if (storageDto.getName().toLowerCase().contains(query.toLowerCase())) {
                 storageDtoList.add(storageDto);
             }
         }

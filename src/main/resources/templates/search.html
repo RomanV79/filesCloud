@@ -31,27 +31,27 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="file, status : ${storageList}">
-                        <td th:if="${file.isDir}"><img th:src="@{/img/directory20.png}"/></td>
-                        <td th:unless="${file.isDir}"><img th:src="@{/img/file20.png}"/></td>
-                        <td><a th:href="@{'/api/v1/storage/download?path=' + ${file.filePath} + ${file.name}}"><img
+                    <tr th:each="element, status : ${storageList}">
+                        <td th:if="${element.isDir}"><img th:src="@{/img/directory20.png}"/></td>
+                        <td th:unless="${element.isDir}"><img th:src="@{/img/file20.png}"/></td>
+                        <td><a th:href="@{'/api/v1/storage/download?path=' + ${element.filePath} + ${element.name}}"><img
                                 th:src="@{/img/download-20.png}" alt=""/></a></td>
-                        <td><a th:href="@{'/home?path=' + ${#strings.defaultString(file.filePath,'')} + ${file.name}}"
-                               th:text="${file.name}" th:id="${status.index}">Name</a></td>
-                        <td><a th:href="@{'/home?path=' + ${file.parentDirPath}}"><img th:src="@{/img/go-to-20.png}" alt=""/></a></td>
-                        <td th:text="${file.lastModified}"></td>
-                        <td th:if="${file.size == 0}"></td>
-                        <td th:unless="${file.size == 0}"
-                            th:text="${#numbers.formatDecimal(file.size, 2, 'WHITESPACE', 0, 'POINT')} + ' B'"></td>
+                        <td><a th:href="@{'/home?path=' + ${#strings.defaultString(element.filePath,'')} + ${element.name}}"
+                               th:text="${element.name}" th:id="${status.index}">Name</a></td>
+                        <td><a th:href="@{'/home?path=' + ${element.parentDirPath}}"><img th:src="@{/img/go-to-20.png}" alt=""/></a></td>
+                        <td th:text="${element.lastModified}"></td>
+                        <td th:if="${element.size == null}"></td>
+                        <td th:unless="${element.size == null}"
+                            th:text="${element.size.humanReadableSize}"></td>
                         <td>
                             <button type="button" class="btn btn-secondary pt-0 pb-0" th:id="${status.index}"
-                                    th:attr="data-name=${file.name}"
+                                    th:attr="data-name=${element.name}"
                                     data-bs-toggle="modal" data-bs-target="#staticDelete">delete
                             </button>
                         </td>
                         <td>
                             <button type="button" class="btn btn-secondary pt-0 pb-0" th:id="${status.index}"
-                                    th:attr="data-name=${file.name}"
+                                    th:attr="data-name=${element.name}"
                                     data-bs-toggle="modal" data-bs-target="#staticRename">rename
                             </button>
                         </td>

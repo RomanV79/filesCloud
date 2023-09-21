@@ -175,11 +175,14 @@ public class MinioRepository {
         return objectsName;
     }
 
-    public List<Item> getAllObjectListFormDir(String rootDir) throws StorageErrorException {
+    public List<Item> getAllObjectListFromDir(String rootDir) throws StorageErrorException {
         Queue<Item> directories = new LinkedList<>();
         List<Item> allItems = new ArrayList<>();
 
         do {
+            if (directories.size() != 0) {
+                rootDir = directories.remove().objectName();
+            }
             Iterable<Result<Item>> results = minioClient.listObjects(
                     ListObjectsArgs
                             .builder()
@@ -188,8 +191,9 @@ public class MinioRepository {
                             .build());
             for (Result<Item> item:results) {
                 try {
+                    log.info("item name -> {}", item.get().objectName());
                     if (item.get().isDir()) {
-                        directories.offer(item.get());
+                        directories.add(item.get());
                         allItems.add(item.get());
                     }
                     if(isNotFakeDir(item)) {
@@ -201,7 +205,8 @@ public class MinioRepository {
                     throw new StorageErrorException("Storage server error");
                 }
             }
-            rootDir = Objects.requireNonNull(directories.poll()).objectName();
+
+//            rootDir = directories.remove().objectName();
 
         } while (!directories.isEmpty());
 

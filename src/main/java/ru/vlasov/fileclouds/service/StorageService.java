@@ -71,13 +71,23 @@ public class StorageService {
 
     public void delete(String path) throws StorageErrorException {
         String fullPath = getRootFolder() + path;
+        log.info("fullPath -> {}", fullPath);
         if (!isDir(path)) {
             minioRepository.delete(fullPath);
         } else {
-            List<String> fullPathNames = minioRepository.getAllfullPathNameObjectsWithParent(fullPath);
-            for (String element : fullPathNames) {
-                minioRepository.delete(element);
+
+            List<Item> itemList = minioRepository.getAllObjectListFromDirIncludeInternal(fullPath, true);
+            if (itemList != null && !itemList.isEmpty()) {
+                for (Item item:itemList) {
+                    StorageDto storageDto = Util.convertItemToStorageDto(item);
+                    if (storageDto != null) {
+                        String elementPath = getRootFolder() + storageDto.getParentDirPath() + storageDto.getName();
+                        log.info("elementPath -> {}", elementPath);
+                        minioRepository.delete(getRootFolder() + storageDto.getParentDirPath() + storageDto.getName());
+                    }
+                }
             }
+            minioRepository.delete(fullPath);
         }
     }
 

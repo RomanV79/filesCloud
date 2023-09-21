@@ -204,9 +204,6 @@ public class MinioRepository {
             rootDir = Objects.requireNonNull(directories.poll()).objectName();
 
         } while (!directories.isEmpty());
-        for (Item item:allItems) {
-            log.info("elements -> {}", item.objectName());
-        }
 
         return allItems.isEmpty() ? null : allItems;
     }

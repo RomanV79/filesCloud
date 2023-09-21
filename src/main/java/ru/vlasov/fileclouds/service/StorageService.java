@@ -30,9 +30,6 @@ import java.util.zip.ZipOutputStream;
 @Service
 public class StorageService {
 
-    @Value("${minio.root_bucket_name}")
-    private String rootBucketName;
-
     private final MinioRepository minioRepository;
 
     @Autowired
@@ -60,7 +57,7 @@ public class StorageService {
 
         List<StorageDto> storageDtoList = new ArrayList<>();
         for (Result<Item> item : results) {
-            StorageDto storageDto = null;
+            StorageDto storageDto;
             try {
                 storageDto = Util.convertItemToStorageDto(item.get());
             } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
@@ -144,7 +141,7 @@ public class StorageService {
             }
             minioRepository.uploadFile(getRootFolder() + path, file);
         }
-        log.info("set path element -> {}", paths.toString());
+
         if (!paths.isEmpty()) {
             for (String element : paths) {
                 minioRepository.createDirectory(getRootFolder() + element);

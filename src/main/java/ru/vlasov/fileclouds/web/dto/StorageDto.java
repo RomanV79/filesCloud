@@ -13,8 +13,7 @@ public class StorageDto {
     private boolean isDir;
     private String name;
     private String parentDirPath;
-    private FilePath filePath;
+    private FilePath filePath = new FilePath();
     private String lastModified;
-    private Long size;
-
+    private FileSize size = new FileSize();
 }

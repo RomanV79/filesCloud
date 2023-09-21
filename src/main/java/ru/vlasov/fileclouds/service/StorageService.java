@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -71,7 +72,7 @@ public class StorageService {
                 storageDtoList.add(storageDto);
             }
         }
-        return storageDtoList;
+        return storageDtoList.stream().sorted(Comparator.comparing(StorageDto::isDir).reversed().thenComparing(StorageDto::getLastModified)).collect(Collectors.toList());
     }
 
     public void delete(String path) throws StorageErrorException {
@@ -187,6 +188,6 @@ public class StorageService {
             }
         }
 
-        return storageDtoList;
+        return storageDtoList.stream().sorted(Comparator.comparing(StorageDto::isDir).reversed().thenComparing(StorageDto::getLastModified)).collect(Collectors.toList());
     }
 }

@@ -12,7 +12,7 @@
 <div class="container">
     <header th:replace="~{fragments/header :: header (isAuthenticated=${isAuthenticated})}"></header>
     <div class="row">
-        <div class="col-md-6 offset-md-3">
+        <div class="col-md-6 offset-md-3 mt-lg-5">
             <div th:if="${param.error}">
                 <div class="alert alert-danger">Invalid Email or Password</div>
             </div>

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vlasov.fileclouds.config.security.AppUserDetails;
 import ru.vlasov.fileclouds.customException.BrokenFileException;
+import ru.vlasov.fileclouds.customException.EmptyFolderException;
 import ru.vlasov.fileclouds.customException.StorageErrorException;
 import ru.vlasov.fileclouds.repository.MinioRepository;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
@@ -51,20 +52,15 @@ public class StorageService {
         minioRepository.createDirectory(rootDirectory);
     }
 
-    public List<StorageDto> getFilesAndDirectories(String directory) throws StorageErrorException {
+    public List<StorageDto> getFilesAndDirsForCurrentPath(String directory) throws StorageErrorException, EmptyFolderException {
         String fullPath = getRootFolder() + directory;
-        Iterable<Result<Item>> results = minioRepository.getFilesAndDirectories(fullPath);
+        List<Item> results = minioRepository.getAllObjectListFromDirIncludeInternal(fullPath, false);
+        if (results == null) throw new EmptyFolderException("Empty");
 
         List<StorageDto> storageDtoList = new ArrayList<>();
-        for (Result<Item> item : results) {
+        for (Item item : results) {
             StorageDto storageDto;
-            try {
-                storageDto = Util.convertItemToStorageDto(item.get());
-            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
-                     InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
-                     XmlParserException e) {
-                throw new StorageErrorException("Storage server error");
-            }
+            storageDto = Util.convertItemToStorageDto(item);
             if (storageDto != null) {
                 storageDtoList.add(storageDto);
             }
@@ -181,7 +177,7 @@ public class StorageService {
 
     public List<StorageDto> getFilesAndDirectoriesForQuery(String query) throws StorageErrorException {
         List<StorageDto> storageDtoList = new ArrayList<>();
-        List<Item> itemList = minioRepository.getAllObjectListFromDir(getRootFolder());
+        List<Item> itemList = minioRepository.getAllObjectListFromDirIncludeInternal(getRootFolder(), true);
         for (Item item:itemList) {
             StorageDto storageDto = Util.convertItemToStorageDto(item);
             assert storageDto != null;

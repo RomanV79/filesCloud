@@ -175,12 +175,12 @@ public class MinioRepository {
         return objectsName;
     }
 
-    public List<Item> getAllObjectListFromDir(String rootDir) throws StorageErrorException {
+    public List<Item> getAllObjectListFromDirIncludeInternal(String rootDir, boolean include) throws StorageErrorException {
         Queue<Item> directories = new LinkedList<>();
         List<Item> allItems = new ArrayList<>();
 
         do {
-            if (directories.size() != 0) {
+            if (!directories.isEmpty()) {
                 rootDir = directories.remove().objectName();
             }
             Iterable<Result<Item>> results = minioClient.listObjects(
@@ -206,9 +206,7 @@ public class MinioRepository {
                 }
             }
 
-//            rootDir = directories.remove().objectName();
-
-        } while (!directories.isEmpty());
+        } while (!directories.isEmpty() && include);
 
         return allItems.isEmpty() ? null : allItems;
     }

@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.vlasov.fileclouds.customException.EmptyFolderException;
 import ru.vlasov.fileclouds.customException.StorageErrorException;
 import ru.vlasov.fileclouds.service.StorageService;
 import ru.vlasov.fileclouds.web.dto.StorageDto;
@@ -40,11 +41,13 @@ public class SearchController {
         boolean isAuthenticated = !(authentication instanceof AnonymousAuthenticationToken);
         model.addAttribute("isAuthenticated", isAuthenticated);
 
-        List<StorageDto> storageDtoList;
+        List<StorageDto> storageDtoList = null;
         try {
             storageDtoList = storageService.getFilesAndDirectoriesForQuery(query);
         } catch (StorageErrorException e) {
             throw new RuntimeException(e);
+        } catch (EmptyFolderException e) {
+            model.addAttribute("emptyPointer", true);
         }
 
         model.addAttribute("storageList", storageDtoList);

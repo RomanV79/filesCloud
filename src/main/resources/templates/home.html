@@ -121,6 +121,9 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <tr>
+                        <td th:if="${emptyPointer}" colspan="7" class="text-md-center">EMPTY</td>
+                    </tr>
                     <tr th:each="element, status : ${storageList}">
                         <td th:if="${element.isDir}"><img th:src="@{/img/directory20.png}"/></td>
                         <td th:unless="${element.isDir}"><img th:src="@{/img/file20.png}"/></td>

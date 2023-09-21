@@ -175,9 +175,11 @@ public class StorageService {
         }
     }
 
-    public List<StorageDto> getFilesAndDirectoriesForQuery(String query) throws StorageErrorException {
+    public List<StorageDto> getFilesAndDirectoriesForQuery(String query) throws StorageErrorException, EmptyFolderException {
         List<StorageDto> storageDtoList = new ArrayList<>();
         List<Item> itemList = minioRepository.getAllObjectListFromDirIncludeInternal(getRootFolder(), true);
+        if (itemList == null) throw new EmptyFolderException("Empty");
+
         for (Item item:itemList) {
             StorageDto storageDto = Util.convertItemToStorageDto(item);
             assert storageDto != null;
@@ -186,6 +188,7 @@ public class StorageService {
                 storageDtoList.add(storageDto);
             }
         }
+        if (storageDtoList.isEmpty()) throw new EmptyFolderException("Empty");
 
         return sortIsDirThenLastModified(storageDtoList);
     }

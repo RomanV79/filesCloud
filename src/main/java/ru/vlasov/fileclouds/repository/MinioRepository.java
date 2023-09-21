@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 import ru.vlasov.fileclouds.customException.BrokenFileException;
 import ru.vlasov.fileclouds.customException.StorageErrorException;
+import ru.vlasov.fileclouds.web.dto.StorageDto;
+import ru.vlasov.fileclouds.web.dto.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -133,40 +135,9 @@ public class MinioRepository {
         }
     }
 
-    public List<String> getAllfullPathNameObjectsWithParent(String fullPath) throws StorageErrorException {
-        Queue<String> folders = new PriorityQueue<>();
-        folders.add(fullPath);
-
-        List<String> objectsName = new ArrayList<>();
-        objectsName.add(fullPath);
-
-        while (!folders.isEmpty()) {
-            Iterable<Result<Item>> results = minioClient.listObjects(
-                    ListObjectsArgs
-                            .builder()
-                            .bucket(rootBucketName)
-                            .prefix(folders.remove())
-                            .build());
-
-            try {
-                for (Result<Item> item : results) {
-                    if (item.get().isDir()) {
-                        folders.add(item.get().objectName());
-                    }
-                    objectsName.add(item.get().objectName());
-                }
-            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
-                     InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
-                     XmlParserException e) {
-                throw new StorageErrorException("Storage server error");
-            }
-        }
-        return objectsName;
-    }
-
-    public List<Item> getAllObjectListFromDirIncludeInternal(String rootDir, boolean include) throws StorageErrorException {
+    public List<StorageDto> getAllObjectListFromDirIncludeInternal(String rootDir, boolean include) throws StorageErrorException {
         Queue<Item> directories = new LinkedList<>();
-        List<Item> allItems = new ArrayList<>();
+        List<StorageDto> allItems = new ArrayList<>();
 
         do {
             if (!directories.isEmpty()) {
@@ -180,12 +151,12 @@ public class MinioRepository {
                             .build());
             for (Result<Item> item:results) {
                 try {
-                    if (item.get().isDir()) {
+                    if (item.get() != null && item.get().isDir()) {
                         directories.add(item.get());
-                        allItems.add(item.get());
+                        allItems.add(Util.convertItemToStorageDto(item.get()));
                     }
-                    if(isNotFakeDir(item)) {
-                        allItems.add(item.get());
+                    if(item.get() != null && isNotFakeDir(item)) {
+                        allItems.add(Util.convertItemToStorageDto(item.get()));
                     }
                 } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
                          InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
@@ -196,7 +167,7 @@ public class MinioRepository {
 
         } while (!directories.isEmpty() && include);
 
-        return allItems.isEmpty() ? null : allItems;
+        return allItems;
     }
 
     private static boolean isNotFakeDir(Result<Item> item) throws ErrorResponseException, InsufficientDataException, InternalException, InvalidKeyException, InvalidResponseException, IOException, NoSuchAlgorithmException, ServerException, XmlParserException {

@@ -25,7 +25,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping("/home")
+@RequestMapping({"/home", "/"})
 public class HomeController {
 
     private final StorageService storageService;

@@ -57,7 +57,7 @@ public class MinioRepository {
 
     public void uploadFile(String fullPath, @NotNull MultipartFile multipartFile) throws StorageErrorException, BrokenFileException {
 
-        InputStream inputStream = null;
+        InputStream inputStream;
         try {
             inputStream = multipartFile.getInputStream();
         } catch (IOException e) {

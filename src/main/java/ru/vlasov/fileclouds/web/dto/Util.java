@@ -29,7 +29,7 @@ public class Util {
         if (paths.length < 2) {
             storageDto.setParentDirPath("");
         } else {
-            storageDto.setParentDirPath(createParentDirPath(paths));
+            storageDto.setParentDirPath(getParentDirPath(paths));
         }
         if (item.isDir()) {
             storageDto.setName(paths[paths.length - 1] + "/");
@@ -67,7 +67,7 @@ public class Util {
     }
 
     private static String getSizeForHuman(long size) {
-        String hrSize = null;
+        String hrSize;
 
         double b = size;
         double k = size / 1024.0;
@@ -112,17 +112,7 @@ public class Util {
         return breadcrumbs;
     }
 
-    private static String getName(String path) {
-        String[] element = path.split("/");
-        return element[element.length - 1];
-    }
-
-    private static String getParent(String path) {
-        String[] element = path.split("/");
-        return element[element.length - 2];
-    }
-
-    private static String createParentDirPath(String[] paths) {
+    private static String getParentDirPath(String[] paths) {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < paths.length - 1; i++) {
             builder.append(paths[i]).append("/");

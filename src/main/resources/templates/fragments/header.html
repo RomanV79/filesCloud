@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
@@ -9,8 +9,9 @@
 </head>
 <body>
 <div class="container">
-    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom"
-                    th:fragment="header (isAuthenticated)">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-2 border-bottom"
+            th:fragment="header (isAuthenticated)">
+
         <div class="col-md-3 mb-2 mb-md-0">
             <a href="/home" class="d-inline-flex link-body-emphasis text-decoration-none">
                 <img width="80" th:src="@{~/img/files-cloud-small.png}" alt="FilesCloud">
@@ -19,16 +20,6 @@
         <div>
             <h1>FilesCloud</h1>
         </div>
-
-        <!--    <div class="col-md-3 text-end" th:unless="${isLoggedIn}">-->
-        <!--        <a href="/signin" class="btn btn-outline-primary me-2">Login</a>-->
-        <!--        <a href="/signup" class="btn btn-primary">Sign-up</a>-->
-        <!--    </div>-->
-        <!--    <div class="col-md-3 text-end" th:if="${isLoggedIn}">-->
-        <!--        <a class="btn btn-outline me-2">Hi, <span th:text="${user.login}"/></a>-->
-        <!--        <a href="/logout" class="btn btn-primary">Logout</a>-->
-        <!--    </div>-->
-
         <div class="col-md-3 text-end" th:unless="${isAuthenticated}">
             <a href="/login" class="btn btn-outline-primary me-2">Login</a>
             <a href="/register" class="btn btn-primary">Sign-up</a>
@@ -38,8 +29,16 @@
             <a href="/logout" class="btn btn-primary">Logout</a>
         </div>
 
-    </header>
 
+        <div class="container d-flex flex-wrap justify-content-center border-top">
+            <form class="input-group w-50 mt-2" action="/search">
+                <input type="search" class="form-control" name="query" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
+                <button class="btn btn-primary" type="submit" id="button-addon2" data-mdb-ripple-color="dark">
+                    Search
+                </button>
+            </form>
+        </div>
+    </header>
 </div>
 </body>
 </html>

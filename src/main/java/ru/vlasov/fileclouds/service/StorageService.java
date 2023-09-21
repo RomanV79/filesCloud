@@ -155,7 +155,7 @@ public class StorageService {
         return minioRepository.downloadFile(getRootFolder() + fullPath);
     }
 
-    public ZipEntry downloadZip(ZipOutputStream zipOut, String fullPath) throws StorageErrorException, IOException {
+    public void downloadZip(ZipOutputStream zipOut, String fullPath) throws StorageErrorException, IOException {
         String parentPath = getRootFolder() + fullPath;
         List<String> listFileNamesWithParent = minioRepository.getAllfullPathNameObjectsWithParent(parentPath);
         for (String fileName : listFileNamesWithParent) {
@@ -174,6 +174,19 @@ public class StorageService {
                 zipOut.closeEntry();
             }
         }
-        return null;
+    }
+
+    public List<StorageDto> getFilesAndDirectoriesForQuery(String query) throws StorageErrorException {
+        List<StorageDto> storageDtoList = new ArrayList<>();
+        List<Item> itemList = minioRepository.getAllObjectListFormDir(getRootFolder());
+        for (Item item:itemList) {
+            StorageDto storageDto = Util.convertItemToStorageDto(item);
+            assert storageDto != null;
+            if (storageDto.getName().contains(query)) {
+                storageDtoList.add(storageDto);
+            }
+        }
+
+        return storageDtoList;
     }
 }

@@ -10,9 +10,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class StorageDto {
-    private String name;
-    private FilePath filePath;
     private boolean isDir;
+    private String name;
+    private String parentDirPath;
+    private FilePath filePath;
     private String lastModified;
     private Long size;
 

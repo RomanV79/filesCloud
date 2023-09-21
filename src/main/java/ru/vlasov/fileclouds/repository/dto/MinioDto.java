@@ -7,13 +7,11 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @AllArgsConstructor
-public class TreeObjectMinio {
+public class MinioDto {
     boolean isDir;
     String name;
     String parent;
-    String pathBeforeObj;
-    String pathFromCurrentParent;
-    String fullPathFromBucket;
+    String fullPath;
 
 
 }

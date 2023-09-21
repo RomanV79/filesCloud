@@ -4,7 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Registration and Login System</title>
+    <title>Search page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
           rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
@@ -12,108 +12,18 @@
     <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
-<!--<header th:replace="~{fragments/header :: header (isLoggedIn=${isLoggedIn}, user=${user})}"></header>-->
-
 <div class="container">
     <header th:replace="~{fragments/header :: header (isAuthenticated=${isAuthenticated})}"></header>
     <main>
         <div>
-            <div class="row justify-content-start mb-4 border-bottom pt-3 pb-3">
-                <div class="col-2">
-                    <div class="d-grid gap-4">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#staticBackdrop">
-                            Create folder
-                        </button>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#staticUploadFolder">
-                            Upload folder
-                        </button>
-                    </div>
-
-                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
-                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="staticBackdropLabel">Create folder</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form th:action="@{/api/v1/storage/folder/create}" th:method="POST">
-                                        <div class="mb-3">
-                                            <label for="folder-name" class="col-form-label">Folder name:</label>
-                                            <input type="text" class="form-control" id="folder-name" name="folder-name">
-                                        </div>
-                                        <div class="">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                Close
-                                            </button>
-                                            <button type="submit" class="btn btn-primary">Create</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal fade" id="staticUploadFolder" data-bs-backdrop="static" data-bs-keyboard="false"
-                         tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Upload folder</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form th:action="@{/api/v1/storage/folder/upload}" th:method="POST"
-                                          enctype="multipart/form-data">
-                                        <div class="mb-3">
-                                            <input type="file" class="form-control" id="directory" name="directory"
-                                                   webkitdirectory multiple>
-                                        </div>
-                                        <div class="">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                Close
-                                            </button>
-                                            <button type="submit" class="btn btn-primary">Upload</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="dropzone">
-                        <input type="file" name="file[]" multiple class="dropzone-input">
-                        <p class="dropzone-message m-0">Drag and drop files here</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="d-flex mb-2">
-                <div class="d-inline-block">
-                    <a class="bg-dark bg-gradient text-light p-1 me-1" th:href="'?path='" th:text="home"></a>
-                </div>
-                <div th:unless="${breadcrumbs == null}">
-                    <div class="d-inline-block" th:each="segment, status : ${breadcrumbs.listSegments}">
-                        <span class="ps-1 pe-1">/</span>
-                        <a class="bg-dark bg-gradient text-light p-1"
-                           th:href="'?path=' + ${breadcrumbs.linkSegments.get(segment)}"
-                           th:text="${segment}"></a>
-                    </div>
-                </div>
-            </div>
-            <div>
+            <div class="mt-5">
                 <table class="table table-hover">
                     <thead>
                     <tr>
                         <th scope="col"></th>
                         <th scope="col"><img th:src="@{/img/download_20.png}" alt=""></th>
                         <th scope="col">Name</th>
+                        <th scope="col">Location</th>
                         <th scope="col">Last modified</th>
                         <th scope="col">Size</th>
                         <th scope="col">Delete</th>
@@ -126,8 +36,9 @@
                         <td th:unless="${file.isDir}"><img th:src="@{/img/file20.png}"/></td>
                         <td><a th:href="@{'/api/v1/storage/download?path=' + ${file.filePath} + ${file.name}}"><img
                                 th:src="@{/img/download-20.png}" alt=""/></a></td>
-                        <td><a th:href="@{'?path=' + ${#strings.defaultString(file.filePath,'')} + ${file.name}}"
+                        <td><a th:href="@{'/home?path=' + ${#strings.defaultString(file.filePath,'')} + ${file.name}}"
                                th:text="${file.name}" th:id="${status.index}">Name</a></td>
+                        <td><a th:href="@{'/home?path=' + ${file.parentDirPath}}"><img th:src="@{/img/go-to-20.png}" alt=""/></a></td>
                         <td th:text="${file.lastModified}"></td>
                         <td th:if="${file.size == 0}"></td>
                         <td th:unless="${file.size == 0}"

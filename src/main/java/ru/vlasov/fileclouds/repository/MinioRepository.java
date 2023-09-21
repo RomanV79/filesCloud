@@ -18,10 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -104,14 +101,12 @@ public class MinioRepository {
     public Iterable<Result<Item>> getFilesAndDirectories(String fullPath) {
         fullPath = checkAndMakeStringEndingWithSlash(fullPath);
 
-        Iterable<Result<Item>> results = minioClient.listObjects(
+        return minioClient.listObjects(
                 ListObjectsArgs
                         .builder()
                         .bucket(rootBucketName)
                         .prefix(fullPath)
                         .build());
-
-        return results;
     }
 
     public void delete(String fullPath) throws StorageErrorException {
@@ -182,35 +177,44 @@ public class MinioRepository {
         return objectsName;
     }
 
-    public List<String> getTreeObjectMinioListWithParent(String fullPath) throws StorageErrorException {
-        Queue<String> folders = new PriorityQueue<>();
-        folders.add(fullPath);
+    public List<Item> getAllObjectListFormDir(String rootDir) throws StorageErrorException {
+        Queue<Item> directories = new LinkedList<>();
+        List<Item> allItems = new ArrayList<>();
 
-        List<String> objectsName = new ArrayList<>();
-        objectsName.add(fullPath);
-
-        while (!folders.isEmpty()) {
+        do {
             Iterable<Result<Item>> results = minioClient.listObjects(
                     ListObjectsArgs
                             .builder()
                             .bucket(rootBucketName)
-                            .prefix(folders.remove())
+                            .prefix(rootDir)
                             .build());
-
-            try {
-                for (Result<Item> item : results) {
+            for (Result<Item> item:results) {
+                try {
                     if (item.get().isDir()) {
-                        folders.add(item.get().objectName());
+                        directories.offer(item.get());
+                        allItems.add(item.get());
                     }
-                    objectsName.add(item.get().objectName());
+                    if(isNotFakeDir(item)) {
+                        allItems.add(item.get());
+                    }
+                } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
+                         InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
+                         XmlParserException e) {
+                    throw new StorageErrorException("Storage server error");
                 }
-            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException |
-                     InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
-                     XmlParserException e) {
-                throw new StorageErrorException("Storage server error");
             }
+            rootDir = Objects.requireNonNull(directories.poll()).objectName();
+
+        } while (!directories.isEmpty());
+        for (Item item:allItems) {
+            log.info("elements -> {}", item.objectName());
         }
-        return objectsName;
+
+        return allItems.isEmpty() ? null : allItems;
+    }
+
+    private static boolean isNotFakeDir(Result<Item> item) throws ErrorResponseException, InsufficientDataException, InternalException, InvalidKeyException, InvalidResponseException, IOException, NoSuchAlgorithmException, ServerException, XmlParserException {
+        return !item.get().isDir() && !item.get().objectName().endsWith("/");
     }
 
     private static String checkAndMakeStringEndingWithSlash(String string) {

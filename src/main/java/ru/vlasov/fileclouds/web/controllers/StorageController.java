@@ -18,7 +18,6 @@ import ru.vlasov.fileclouds.service.StorageService;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipOutputStream;
@@ -81,10 +80,6 @@ public class StorageController {
     @PostMapping("/rename")
     public String rename(@RequestParam("old-name") String oldName, @RequestParam("new-name") String newName, HttpSession session) {
         String path = getPath(session);
-        log.info("old-name -> {}", oldName);
-        log.info("new-name -> {}", newName);
-        log.info("path -> {}", path);
-
         try {
             storageService.rename(oldName, newName, path);
         } catch (StorageErrorException e) {
@@ -96,9 +91,7 @@ public class StorageController {
     @PostMapping("/upload")
     public String uploadFiles(@RequestParam("file") MultipartFile multipartFile,
                               RedirectAttributes redirectAttributes, HttpSession session) {
-        log.info("Start upload controller ->");
         String path = getPath(session);
-        log.info("file name -> {}", multipartFile.getOriginalFilename());
         try {
             storageService.uploadFile(path, multipartFile);
             log.info("Upload service -> OK");
@@ -113,8 +106,6 @@ public class StorageController {
     @GetMapping(value = "/download")
     public void download(@RequestParam("path") String fullPath, HttpSession session, HttpServletResponse response) {
         String path = getPath(session);
-        log.info("path -> {}", path);
-        log.info("fullPath -> {}", fullPath);
         String nameFile = getNameFromPath(fullPath);
 
         if (!fullPath.endsWith("/")) {

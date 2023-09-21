@@ -126,8 +126,6 @@ public class MinioRepository {
     }
 
     public void copy(String destPath, String sourcePath) throws StorageErrorException {
-        log.info("destPath -> {}", destPath);
-        log.info("sourcePath -> {}", sourcePath);
         try {
             minioClient.copyObject(CopyObjectArgs
                     .builder()

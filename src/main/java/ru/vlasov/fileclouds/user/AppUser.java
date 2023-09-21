@@ -38,6 +38,7 @@ public class AppUser implements Serializable {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "roles_id", referencedColumnName = "id"))
+    @ToString.Exclude
     private Set<Role> roles;
 
     public AppUser(String login, String password) {

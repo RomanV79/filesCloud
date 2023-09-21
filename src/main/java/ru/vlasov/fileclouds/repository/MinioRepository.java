@@ -191,7 +191,6 @@ public class MinioRepository {
                             .build());
             for (Result<Item> item:results) {
                 try {
-                    log.info("item name -> {}", item.get().objectName());
                     if (item.get().isDir()) {
                         directories.add(item.get());
                         allItems.add(item.get());

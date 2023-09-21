@@ -166,13 +166,16 @@ public class StorageService {
         return minioRepository.downloadFile(getRootFolder() + fullPath);
     }
 
-    public void downloadZip(ZipOutputStream zipOut, String fullPath) throws StorageErrorException, IOException {
-        String parentPath = getRootFolder() + fullPath;
-        List<String> listFileNamesWithParent = minioRepository.getAllfullPathNameObjectsWithParent(parentPath);
-        for (String fileName : listFileNamesWithParent) {
-            if (!isDir(fileName)) {
-                zipOut.putNextEntry(new ZipEntry(fileName.substring(parentPath.length())));
-                try (InputStream fis = minioRepository.downloadFile(fileName)) {
+    public void downloadZip(ZipOutputStream zipOut, String path) throws StorageErrorException, IOException {
+        List<Item> itemList = minioRepository.getAllObjectListFromDirIncludeInternal(getRootFolder() + path, true);
+        for (Item item:itemList) {
+            StorageDto storageDto = Util.convertItemToStorageDto(item);
+            assert storageDto != null;
+            if (!storageDto.isDir()) {
+                String currentName = (storageDto.getParentDirPath() + storageDto.getName()).substring(path.length());
+                log.info("currentName -> {}", currentName);
+                zipOut.putNextEntry(new ZipEntry(currentName));
+                try (InputStream fis = minioRepository.downloadFile(getRootFolder() + storageDto.getParentDirPath() + storageDto.getName())) {
                     byte[] buffer = new byte[1024];
                     int len;
                     while ((len = fis.read(buffer)) > 0) {

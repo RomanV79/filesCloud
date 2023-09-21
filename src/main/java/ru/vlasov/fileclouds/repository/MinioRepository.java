@@ -98,17 +98,6 @@ public class MinioRepository {
         }
     }
 
-    public Iterable<Result<Item>> getFilesAndDirectories(String fullPath) {
-        fullPath = checkAndMakeStringEndingWithSlash(fullPath);
-
-        return minioClient.listObjects(
-                ListObjectsArgs
-                        .builder()
-                        .bucket(rootBucketName)
-                        .prefix(fullPath)
-                        .build());
-    }
-
     public void delete(String fullPath) throws StorageErrorException {
 
         try {

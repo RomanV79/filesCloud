@@ -129,8 +129,11 @@
                         <td th:unless="${element.isDir}"><img th:src="@{/img/file20.png}"/></td>
                         <td><a th:href="@{'/api/v1/storage/download?path=' + ${element.filePath} + ${element.name}}"><img
                                 th:src="@{/img/download-20.png}" alt=""/></a></td>
-                        <td><a th:href="@{'?path=' + ${#strings.defaultString(element.filePath,'')} + ${element.name}}"
-                               th:text="${element.name}" th:id="${status.index}">Name</a></td>
+                        <td>
+                            <a th:if="${element.isDir}" th:href="@{'?path=' + ${#strings.defaultString(element.filePath,'')} + ${element.name}}"
+                               th:text="${element.name}" th:id="${status.index}">Name</a>
+                            <p class="m-0 text-decoration-underline" th:unless="${element.isDir}" th:text="${element.name}"></p>
+                        </td>
                         <td th:text="${element.lastModified}"></td>
                         <td th:if="${element.size == null}"></td>
                         <td th:unless="${element.size == null}"

@@ -4,6 +4,7 @@ import io.minio.Result;
 import io.minio.errors.*;
 import io.minio.messages.Item;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -68,6 +69,11 @@ public class StorageService {
                 storageDtoList.add(storageDto);
             }
         }
+        return sortIsDirThenLastModified(storageDtoList);
+    }
+
+    @NotNull
+    private static List<StorageDto> sortIsDirThenLastModified(List<StorageDto> storageDtoList) {
         return storageDtoList.stream().sorted(Comparator.comparing(StorageDto::isDir).reversed().thenComparing(StorageDto::getLastModified)).collect(Collectors.toList());
     }
 
@@ -185,6 +191,6 @@ public class StorageService {
             }
         }
 
-        return storageDtoList.stream().sorted(Comparator.comparing(StorageDto::isDir).reversed().thenComparing(StorageDto::getLastModified)).collect(Collectors.toList());
+        return sortIsDirThenLastModified(storageDtoList);
     }
 }

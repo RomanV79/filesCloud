@@ -60,8 +60,8 @@ public class StorageService {
     }
 
     public void delete(String path) throws StorageErrorException {
+        if (path == null) path = "";
         String fullPath = getRootFolder() + path;
-        log.info("fullPath -> {}", fullPath);
         if (!isDir(path)) {
             minioRepository.delete(fullPath);
         } else {
@@ -103,34 +103,6 @@ public class StorageService {
                 }
             }
         }
-    }
-
-    private static boolean isDirEmpty(List<StorageDto> itemList) {
-        return itemList == null;
-    }
-
-    private String getRootFolder() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
-        return "user-" + appUserDetails.getAppUser().getId() + "-files/";
-    }
-
-    private String checkAndMakeNameWithPostfix(String newName, String oldName) {
-        String[] oldNameSplit = oldName.split("\\.");
-        String oldPostfix = oldNameSplit[oldNameSplit.length - 1];
-
-        String[] newNameSplit = newName.split("\\.");
-        String newPostfix = newNameSplit[newNameSplit.length - 1];
-
-        if (!newPostfix.equals(oldPostfix)) {
-            newName = newName + "." + oldPostfix;
-        }
-
-        return newName;
-    }
-
-    private String checkAndMakeNameWithSlash(String name) {
-        return name.endsWith("/") ? name : name + "/";
     }
 
     public void uploadDirectory(String path, MultipartFile[] multipartFiles) throws BrokenFileException, StorageErrorException {
@@ -194,5 +166,33 @@ public class StorageService {
 
     private static boolean isDir(String name) {
         return name.endsWith("/");
+    }
+
+    private static boolean isDirEmpty(List<StorageDto> itemList) {
+        return itemList == null;
+    }
+
+    private String getRootFolder() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
+        return "user-" + appUserDetails.getAppUser().getId() + "-files/";
+    }
+
+    private String checkAndMakeNameWithPostfix(String newName, String oldName) {
+        String[] oldNameSplit = oldName.split("\\.");
+        String oldPostfix = oldNameSplit[oldNameSplit.length - 1];
+
+        String[] newNameSplit = newName.split("\\.");
+        String newPostfix = newNameSplit[newNameSplit.length - 1];
+
+        if (!newPostfix.equals(oldPostfix)) {
+            newName = newName + "." + oldPostfix;
+        }
+
+        return newName;
+    }
+
+    private String checkAndMakeNameWithSlash(String name) {
+        return name.endsWith("/") ? name : name + "/";
     }
 }

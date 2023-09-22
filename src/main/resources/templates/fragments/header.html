@@ -30,7 +30,7 @@
         </div>
 
 
-        <div class="container d-flex flex-wrap justify-content-center border-top">
+        <div th:if="${isAuthenticated}" class="container d-flex flex-wrap justify-content-center border-top">
             <form class="input-group w-50 mt-2" action="/search">
                 <input type="search" class="form-control" name="query" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
                 <button class="btn btn-primary" type="submit" id="button-addon2" data-mdb-ripple-color="dark">

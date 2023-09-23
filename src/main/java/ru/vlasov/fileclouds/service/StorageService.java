@@ -33,12 +33,12 @@ public class StorageService {
     }
 
     public void uploadFile(String path, MultipartFile multipartFile) throws BrokenFileException, StorageErrorException {
-        String fullPath = getRootFolder() + path;
+        String fullPath = getRootUserFolder() + path;
         minioRepository.uploadFile(fullPath, multipartFile);
     }
 
     public void createDirectory(String path) throws StorageErrorException {
-        String fullPath = getRootFolder() + path;
+        String fullPath = getRootUserFolder() + path;
         minioRepository.createDirectory(fullPath);
     }
 
@@ -47,7 +47,7 @@ public class StorageService {
     }
 
     public List<StorageDto> getFilesAndDirsForCurrentPath(String directory) throws StorageErrorException, EmptyFolderException {
-        String fullPath = getRootFolder() + directory;
+        String fullPath = getRootUserFolder() + directory;
         List<StorageDto> dtoList = minioRepository.getAllObjectListFromDirIncludeInternal(fullPath, false);
         if (isDirEmpty(dtoList)) throw new EmptyFolderException("Empty");
 
@@ -56,12 +56,16 @@ public class StorageService {
 
     @NotNull
     private static List<StorageDto> sortIsDirThenLastModified(List<StorageDto> storageDtoList) {
-        return storageDtoList.stream().sorted(Comparator.comparing(StorageDto::isDir).reversed().thenComparing(StorageDto::getLastModified)).collect(Collectors.toList());
+        return storageDtoList.stream()
+                .sorted(
+                        Comparator.comparing(StorageDto::isDir).reversed().
+                                thenComparing(StorageDto::getLastModified))
+                .collect(Collectors.toList());
     }
 
     public void delete(String path) throws StorageErrorException {
         if (path == null) path = "";
-        String fullPath = getRootFolder() + path;
+        String fullPath = getRootUserFolder() + path;
         if (!isDir(path)) {
             minioRepository.delete(fullPath);
         } else {
@@ -69,7 +73,7 @@ public class StorageService {
             List<StorageDto> dtoList = minioRepository.getAllObjectListFromDirIncludeInternal(fullPath, true);
             if (!dtoList.isEmpty()) {
                 for (StorageDto element:dtoList) {
-                        String elementPath = getRootFolder() + element.getParentDirPath() + element.getName();
+                        String elementPath = getRootUserFolder() + element.getParentDirPath() + element.getName();
                         minioRepository.delete(elementPath);
                 }
             }
@@ -80,19 +84,19 @@ public class StorageService {
     public void rename(String oldName, String newName, String path) throws StorageErrorException {
         if (!isDir(oldName)) {
             newName = checkAndMakeNameWithPostfix(newName, oldName);
-            minioRepository.copy(getRootFolder() + path + newName, getRootFolder() + path + oldName);
-            minioRepository.delete(getRootFolder() + path + oldName);
+            minioRepository.copy(getRootUserFolder() + path + newName, getRootUserFolder() + path + oldName);
+            minioRepository.delete(getRootUserFolder() + path + oldName);
         } else {
             newName = checkAndMakeNameWithSlash(newName);
 
-            String destPath = getRootFolder() + path + newName;
-            String sourcePath = getRootFolder() + path + oldName;
+            String destPath = getRootUserFolder() + path + newName;
+            String sourcePath = getRootUserFolder() + path + oldName;
             List<StorageDto> dtoList = minioRepository.getAllObjectListFromDirIncludeInternal(sourcePath, true);
             minioRepository.createDirectory(destPath);
             minioRepository.delete(sourcePath);
             if (!isDirEmpty(dtoList)) {
                 for (StorageDto element : dtoList) {
-                        String elementSourcePath = getRootFolder() + element.getParentDirPath() + element.getName();
+                        String elementSourcePath = getRootUserFolder() + element.getParentDirPath() + element.getName();
                         String elementDestPath = elementSourcePath.replace(path + oldName, path + newName);
                         if (element.isDir()) {
                             minioRepository.createDirectory(elementDestPath);
@@ -116,28 +120,28 @@ public class StorageService {
                     paths.add(stringBuilder.toString());
                 }
             }
-            minioRepository.uploadFile(getRootFolder() + path, file);
+            minioRepository.uploadFile(getRootUserFolder() + path, file);
         }
 
         if (!paths.isEmpty()) {
             for (String element : paths) {
-                minioRepository.createDirectory(getRootFolder() + element);
+                minioRepository.createDirectory(getRootUserFolder() + element);
             }
         }
     }
 
     public InputStream download(String fullPath) throws StorageErrorException {
-        return minioRepository.downloadFile(getRootFolder() + fullPath);
+        return minioRepository.downloadFile(getRootUserFolder() + fullPath);
     }
 
     public void downloadZip(ZipOutputStream zipOut, String path) throws StorageErrorException, IOException {
-        List<StorageDto> dtoList = minioRepository.getAllObjectListFromDirIncludeInternal(getRootFolder() + path, true);
+        List<StorageDto> dtoList = minioRepository.getAllObjectListFromDirIncludeInternal(getRootUserFolder() + path, true);
         for (StorageDto element:dtoList) {
             if (!element.isDir()) {
                 String currentName = (element.getParentDirPath() + element.getName()).substring(path.length());
                 log.info("currentName -> {}", currentName);
                 zipOut.putNextEntry(new ZipEntry(currentName));
-                try (InputStream fis = minioRepository.downloadFile(getRootFolder() + element.getParentDirPath() + element.getName())) {
+                try (InputStream fis = minioRepository.downloadFile(getRootUserFolder() + element.getParentDirPath() + element.getName())) {
                     byte[] buffer = new byte[1024];
                     int len;
                     while ((len = fis.read(buffer)) > 0) {
@@ -151,7 +155,7 @@ public class StorageService {
 
     public List<StorageDto> getFilesAndDirectoriesForQuery(String query) throws StorageErrorException, EmptyFolderException {
         List<StorageDto> sortedList = new ArrayList<>();
-        List<StorageDto> dtoList = minioRepository.getAllObjectListFromDirIncludeInternal(getRootFolder(), true);
+        List<StorageDto> dtoList = minioRepository.getAllObjectListFromDirIncludeInternal(getRootUserFolder(), true);
         if (isDirEmpty(dtoList)) throw new EmptyFolderException("Empty");
 
         for (StorageDto element : dtoList) {
@@ -172,7 +176,7 @@ public class StorageService {
         return itemList == null;
     }
 
-    private String getRootFolder() {
+    private String getRootUserFolder() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
         return "user-" + appUserDetails.getAppUser().getId() + "-files/";

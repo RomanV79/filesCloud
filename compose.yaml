@@ -5,17 +5,18 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - mysql:/var/lib/mysql
+      - data/mysql:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=filescloud
       - MYSQL_PASSWORD=password
       - MYSQL_ROOT_PASSWORD=verysecret
       - MYSQL_USER=admin
-  #  redis:
-  #    image: redis:7.2
-  #    ports:
-  #      - 6379:6379
-
+  redis:
+    image: redis:7.2
+    ports:
+      - 6379:6379
+    volumes:
+      - data/redis:/data
   minio:
     restart: always
     image: bitnami/minio:latest
@@ -23,7 +24,7 @@ services:
       - '9000:9000'
       - '9001:9001'
     volumes:
-      - minio:/data
+      - data/minio:/data
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: password
@@ -31,4 +32,5 @@ services:
 volumes:
   mysql:
   minio:
+  redis:
 

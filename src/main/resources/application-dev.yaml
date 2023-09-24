@@ -10,9 +10,6 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-#  session:
-#    timeout: 86400
-
 minio:
   endpoint: http://127.0.0.1:9000
   user: minio

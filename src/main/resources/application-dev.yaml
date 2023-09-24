@@ -15,5 +15,5 @@ spring:
 
 minio:
   endpoint: http://127.0.0.1:9000
-  user_id: minio
+  user: minio
   password: password

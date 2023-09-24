@@ -30,7 +30,6 @@ public class HomeController {
 
     private final StorageService storageService;
 
-    @Autowired
     public HomeController(StorageService storageService) {
         this.storageService = storageService;
     }

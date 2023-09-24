@@ -10,8 +10,8 @@ public class MinioConfig {
 
     @Value("${minio.endpoint}")
     private String endpoint;
-    @Value("${minio.user_id}")
-    private String userId;
+    @Value("${minio.user}")
+    private String user;
     @Value("${minio.password}")
     private String password;
 
@@ -19,7 +19,7 @@ public class MinioConfig {
     public MinioClient minioClient() {
         return MinioClient.builder()
                 .endpoint(endpoint)
-                .credentials(userId, password)
+                .credentials(user, password)
                 .build();
     }
 }

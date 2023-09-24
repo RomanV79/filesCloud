@@ -27,7 +27,6 @@ public class StorageService {
 
     private final MinioRepository minioRepository;
 
-    @Autowired
     public StorageService(MinioRepository minioRepository) {
         this.minioRepository = minioRepository;
     }

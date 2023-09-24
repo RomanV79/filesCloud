@@ -27,7 +27,6 @@ public class SearchController {
 
     private final StorageService storageService;
 
-    @Autowired
     public SearchController(StorageService storageService) {
         this.storageService = storageService;
     }

@@ -28,7 +28,6 @@ import java.util.zip.ZipOutputStream;
 public class StorageController {
     private final StorageService storageService;
 
-    @Autowired
     public StorageController(StorageService storageService) {
         this.storageService = storageService;
     }

@@ -31,7 +31,6 @@ public class MinioRepository {
 
     private final MinioClient minioClient;
 
-    @Autowired
     public MinioRepository(MinioClient minioClient) {
         this.minioClient = minioClient;
     }

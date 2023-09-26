@@ -1,5 +1,8 @@
+version: '3.8'
+
 services:
   mysql:
+    container_name: 'mysql'
     restart: always
     image: mysql:8.0
     ports:
@@ -12,6 +15,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${SQL_ROOT_PASSWORD}
       MYSQL_USER: ${SQL_USER}
   redis:
+    container_name: 'redis'
     restart: always
     image: redis:7.2
     ports:
@@ -19,6 +23,7 @@ services:
     volumes:
       - redis:/data
   minio:
+    container_name: 'minio'
     restart: always
     image: bitnami/minio:latest
     ports:

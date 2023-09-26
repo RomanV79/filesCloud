@@ -1,17 +1,18 @@
 services:
   mysql:
     restart: always
-    image: mysql:8
+    image: mysql:8.0
     ports:
       - 3306:3306
     volumes:
       - /var/lib/mysql
     environment:
-      - MYSQL_DATABASE=filescloud
-      - MYSQL_PASSWORD=password
-      - MYSQL_ROOT_PASSWORD=verysecret
-      - MYSQL_USER=admin
+      MYSQL_DATABASE: filescloud
+      MYSQL_PASSWORD: ${SQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${SQL_ROOT_PASSWORD}
+      MYSQL_USER: ${SQL_USER}
   redis:
+    restart: always
     image: redis:7.2
     ports:
       - 6379:6379

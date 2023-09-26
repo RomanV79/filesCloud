@@ -5,6 +5,9 @@ spring:
     show-sql: true
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/filescloud
+    username: ${SQL_USER}
+    password: ${SQL_PASSWORD}
 
   data:
     redis:
@@ -14,5 +17,14 @@ spring:
   session:
     timeout: 86400
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 minio:
   root_bucket_name: user-files
+  endpoint: http://127.0.0.1:9000
+  user: minio
+  password: password

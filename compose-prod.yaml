@@ -7,8 +7,6 @@ services:
     image: mysql:8.1.0
     ports:
       - "3306:3306"
-    networks:
-      - app-net
     volumes:
       - mysql:/var/lib/mysql
     environment:
@@ -29,8 +27,6 @@ services:
     container_name: 'minio'
     restart: always
     image: bitnami/minio:latest
-    networks:
-      - app-net
     ports:
       - '9000:9000'
       - '9001:9001'
@@ -44,8 +40,6 @@ services:
     container_name: 'app_filescloud'
     restart: always
     image: romanv79/filescloud:v1.0.2
-    networks:
-      - app-net
     ports:
       - "8082:8080"
     environment:
@@ -58,10 +52,6 @@ services:
       - mysql
       - redis
       - minio
-
-networks:
-  app-net:
-    driver: bridge
 
 volumes:
   mysql:

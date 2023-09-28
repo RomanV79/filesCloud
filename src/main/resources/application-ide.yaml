@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/filescloud
+    username: roman
+    password: pas12345678
+
+minio:
+  endpoint: http://127.0.0.1:9000
+  access_key: admin
+  secret_key: miniopas

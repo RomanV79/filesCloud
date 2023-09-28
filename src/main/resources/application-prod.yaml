@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://mysql:3306/filescloud
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
+
+minio:
+  endpoint: http://minio:9000
+  access_key: ${MINIO_ROOT_USER}
+  secret_key: ${MINIO_ROOT_PASSWORD}

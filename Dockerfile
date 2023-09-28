@@ -6,5 +6,5 @@ RUN mvn -f /pom.xml clean package
 FROM eclipse-temurin:17-jre
 WORKDIR /
 COPY --from=build /target/*.jar filescloud.jar
-EXPOSE 8082
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "filescloud.jar"]

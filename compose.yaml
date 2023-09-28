@@ -1,19 +1,19 @@
-version: '3.8'
+version: '3.9'
 
 services:
   mysql:
     container_name: 'mysql'
     restart: always
-    image: mysql:8.0
+    image: mysql:8.1.0
     ports:
       - 3306:3306
     volumes:
       - mysql:/var/lib/mysql
     environment:
       MYSQL_DATABASE: filescloud
-      MYSQL_PASSWORD: ${SQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${SQL_ROOT_PASSWORD}
-      MYSQL_USER: ${SQL_USER}
+      MYSQL_PASSWORD: pass12345678
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_USER: roman
   redis:
     container_name: 'redis'
     restart: always
@@ -32,8 +32,8 @@ services:
     volumes:
       - minio:/data
     environment:
-      MINIO_ROOT_USER: ${MINIO_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: miniopas
 
 volumes:
   mysql:

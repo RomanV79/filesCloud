@@ -6,8 +6,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/filescloud
-    username: ${SQL_USER}
-    password: ${SQL_PASSWORD}
+    username: roman
+    password: pas12345678
 
   data:
     redis:
@@ -26,5 +26,5 @@ spring:
 minio:
   root_bucket_name: user-files
   endpoint: http://127.0.0.1:9000
-  access_key: ${MINIO_USER}
-  secret_key: ${MINIO_PASSWORD}
+  access_key: admin
+  secret_key: miniopas

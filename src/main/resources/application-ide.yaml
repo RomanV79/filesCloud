@@ -4,6 +4,10 @@ spring:
     username: roman
     password: pas12345678
 
+  data:
+    redis:
+      host: localhost
+
 minio:
   endpoint: http://127.0.0.1:9000
   access_key: admin
